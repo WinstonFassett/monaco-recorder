@@ -1,0 +1,1350 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Generated App</title>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/html2canvas-pro@1.5.8/dist/html2canvas-pro.js"></script>
+    <!-- html2canvas-pro handles modern CSS color formats like OKLCH natively -->
+    <link rel="stylesheet" href="https://esm.sh/use-vibes@latest/dist/components/ImgGen.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+      #container {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+    <script>
+      const activeRequests = new Set();
+      let lastState = null;
+
+      function updateStreamingState() {
+        const currentState = activeRequests.size > 0;
+        if (currentState !== lastState) {
+          lastState = currentState;
+          window.parent.postMessage({ type: 'streaming', state: currentState }, '*');
+        }
+      }
+
+      const originalFetch = window.fetch;
+      window.fetch = (...args) => {
+        const reqInfo = args[0];
+        activeRequests.add(reqInfo);
+        updateStreamingState();
+
+        return originalFetch(...args).then((res) => {
+          if (!res.body) {
+            activeRequests.delete(reqInfo);
+            updateStreamingState();
+            return res;
+          }
+          const reader = res.body.getReader();
+          const stream = new ReadableStream({
+            start(controller) {
+              function pump() {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    activeRequests.delete(reqInfo);
+                    updateStreamingState();
+                    controller.close();
+                    return;
+                  }
+                  controller.enqueue(value);
+                  pump();
+                });
+              }
+              pump();
+            },
+          });
+          return new Response(stream, { headers: res.headers });
+        });
+      };
+
+      // Screenshot functionality
+      function cropToMaxAspectRatio(canvas, maxAspectRatio) {
+        const width = canvas.width;
+        const height = canvas.height;
+        const currentAspectRatio = height / width;
+
+        // If already within the max aspect ratio, return original canvas
+        if (currentAspectRatio <= maxAspectRatio) {
+          return canvas;
+        }
+
+        // Calculate new dimensions - crop from the bottom
+        const newHeight = width * maxAspectRatio;
+        const cropY = 0; // Start from top
+
+        // Create new canvas with cropped dimensions
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = width;
+        croppedCanvas.height = newHeight;
+
+        const ctx = croppedCanvas.getContext('2d');
+
+        // Draw cropped portion of original canvas
+        ctx.drawImage(
+          canvas,
+          0,
+          cropY,
+          width,
+          newHeight, // Source rectangle (crop from original)
+          0,
+          0,
+          width,
+          newHeight // Destination rectangle (full new canvas)
+        );
+
+        return croppedCanvas;
+      }
+
+      function captureScreenshot() {
+        // Check if html2canvas is loaded
+        if (typeof html2canvas === 'undefined') {
+          // Try to load html2canvas-pro dynamically
+          const script = document.createElement('script');
+          script.src = 'https://unpkg.com/html2canvas-pro@1.5.8/dist/html2canvas-pro.js';
+          script.onload = () => {
+            captureScreenshotWithFallback();
+          };
+          script.onerror = (e) => {
+            window.parent.postMessage(
+              { type: 'screenshot-error', error: 'Failed to load html2canvas' },
+              '*'
+            );
+          };
+          document.head.appendChild(script);
+          return;
+        }
+
+        captureScreenshotWithFallback();
+      }
+
+      function captureScreenshotWithFallback() {
+        try {
+          // Let html2canvas-pro do its job with modern CSS
+          html2canvas(document.body, {
+            allowTaint: true,
+            useCORS: true,
+            scale: 1,
+            logging: false,
+          })
+            .then((canvas) => {
+              // Crop to max 3:1 aspect ratio (3 times taller than wide)
+              const croppedCanvas = cropToMaxAspectRatio(canvas, 3);
+              const dataURI = croppedCanvas.toDataURL();
+              window.parent.postMessage({ type: 'screenshot', data: dataURI }, '*');
+            })
+            .catch((err) => {
+              window.parent.postMessage(
+                {
+                  type: 'screenshot-error',
+                  error: 'Screenshot capture failed: ' + (err.message || 'Unknown error'),
+                },
+                '*'
+              );
+            });
+        } catch (err) {
+          window.parent.postMessage(
+            {
+              type: 'screenshot-error',
+              error: 'Unexpected error during screenshot capture',
+            },
+            '*'
+          );
+        }
+      }
+
+      function pageIsLoaded() {
+        window.parent.postMessage({ type: 'preview-ready' }, '*');
+        setTimeout(captureScreenshot, 2000);
+      }
+
+      // For rapid updates (optional)
+      let currentApp = null;
+      function updateAppComponent(code) {
+        try {
+          // Evaluate new component code
+          eval(code);
+
+          // If we implement rapid updates, we'll need to re-render here
+          if (currentApp && window.ReactDOM) {
+            // Re-render with new component
+          }
+
+          return true;
+        } catch (error) {
+          console.error('Failed to update component:', error);
+          return false;
+        }
+      }
+
+      // Event listeners
+      window.addEventListener('message', function (event) {
+        if (event.data) {
+          if (event.data.type === 'command') {
+            if (event.data.command === 'capture-screenshot') {
+              captureScreenshot();
+            }
+          } 
+          // else if (event.data.type === 'callai-api-key' && event.data.key) {
+          //   window.CALLAI_API_KEY = event.data.key;
+          // }
+        }
+      });
+
+      window.addEventListener('DOMContentLoaded', function () {
+        pageIsLoaded();
+      });
+
+      // Global error handlers to catch and log all errors
+      window.onerror = function (message, source, lineno, colno, error) {
+        const errorDetails = {
+          type: 'error',
+          message: message,
+          source: source,
+          lineno: lineno,
+          colno: colno,
+          stack: error?.stack || 'No stack trace available',
+          timestamp: new Date().toISOString(),
+        };
+        console.error('Uncaught error:', errorDetails);
+        // Send error to parent window
+        window.parent.postMessage({ type: 'iframe-error', error: errorDetails }, '*');
+        return false; // Let the default error handler run
+      };
+
+      // Handle unhandled promise rejections
+      window.addEventListener('unhandledrejection', function (event) {
+        const errorDetails = {
+          type: 'unhandledrejection',
+          reason: event.reason?.toString() || 'Unknown reason',
+          stack: event.reason?.stack || 'No stack trace available',
+          timestamp: new Date().toISOString(),
+        };
+        // Send rejection to parent window
+        window.parent.postMessage({ type: 'iframe-error', error: errorDetails }, '*');
+      });
+    </script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@19.1.1/es2022/react.mjs",
+          "react-dom": "https://esm.sh/react-dom@19.1.1/es2022/react-dom.mjs",
+          "react-dom/client": "https://esm.sh/react-dom@19.1.1/es2022/client.mjs",
+          "three": "https://esm.sh/three"
+        }
+      }
+    </script>
+
+    <!-- Enhanced Babel and JSX error handling script -->
+    <script>
+      window.babelTransformError = null;
+
+      // 1. Patch console.error to capture JSX parse errors that are only logged to console
+      const originalConsoleError = console.error;
+      console.error = function (...args) {
+        const errorMsg = args.join(' ');
+
+        // Look for specific JSX parse errors that might not trigger other handlers
+        if (
+          errorMsg.includes('parse-error.ts') ||
+          (errorMsg.includes('SyntaxError') && errorMsg.includes('Unexpected token')) ||
+          errorMsg.includes('JSX')
+        ) {
+          // Extract line and position information if available
+          let lineInfo = '';
+          const lineMatch =
+            errorMsg.match(/(\d+):(\d+)/) || errorMsg.match(/line (\d+).+column (\d+)/);
+          if (lineMatch) {
+            lineInfo = ` at line ${lineMatch[1]}, column ${lineMatch[2]}`;
+          }
+
+          // Extract meaningful error message
+          let message = 'JSX Syntax Error';
+          if (errorMsg.includes('Unexpected token')) {
+            const tokenMatch = errorMsg.match(/Unexpected token[,:]?\s*([^,\n\)]+)/);
+            if (tokenMatch) {
+              message = `JSX Syntax Error: Unexpected token ${tokenMatch[1].trim()}`;
+            }
+          } else if (errorMsg.includes('expected')) {
+            const expectedMatch = errorMsg.match(/expected\s+([^,\n\)]+)/);
+            if (expectedMatch) {
+              message = `JSX Syntax Error: Expected ${expectedMatch[1].trim()}`;
+            }
+          }
+
+          const errorDetails = {
+            type: 'error',
+            message: `${message}${lineInfo}`,
+            source: 'jsx-parser',
+            stack: errorMsg,
+            timestamp: new Date().toISOString(),
+            errorType: 'SyntaxError',
+          };
+
+          // Only send if we haven't already reported an error
+          if (!window.babelTransformError) {
+            window.parent.postMessage({ type: 'iframe-error', error: errorDetails }, '*');
+            window.babelTransformError = errorDetails;
+          }
+        }
+
+        // Call original console.error
+        originalConsoleError.apply(console, args);
+      };
+
+      // 2. Patch Babel transform for errors caught during transformation
+      if (window.Babel && window.Babel.transform) {
+        const originalTransform = window.Babel.transform;
+        window.Babel.transform = function (code, options) {
+          try {
+            return originalTransform.call(this, code, options);
+          } catch (err) {
+            // Capture and format Babel error
+            const errorDetails = {
+              type: 'error',
+              message: `Babel Syntax Error: ${err.message || 'Invalid syntax'}`,
+              source: 'babel-transform',
+              stack: err.stack || '',
+              timestamp: new Date().toISOString(),
+              errorType: 'SyntaxError',
+            };
+            // Report error to parent
+            window.parent.postMessage({ type: 'iframe-error', error: errorDetails }, '*');
+            window.babelTransformError = errorDetails;
+            throw err;
+          }
+        };
+      }
+
+      // 3. Enhanced unhandled error handler specifically for syntax errors
+      window.addEventListener(
+        'error',
+        function (event) {
+          // Skip if we already caught the error elsewhere
+          if (window.babelTransformError) return;
+
+          // Focus on syntax errors and parse errors
+          if (
+            event.error?.stack?.includes('parse-error.ts') ||
+            event.message?.includes('SyntaxError') ||
+            (event.message === 'Script error.' && !event.filename)
+          ) {
+            let message = event.message;
+            if (message === 'Script error.') {
+              message = 'JSX Syntax Error: Unable to parse JSX code';
+            }
+
+            const errorDetails = {
+              type: 'error',
+              message: message,
+              source: event.filename || 'jsx-parser',
+              lineno: event.lineno || 0,
+              colno: event.colno || 0,
+              stack: event.error?.stack || '',
+              timestamp: new Date().toISOString(),
+              errorType: 'SyntaxError',
+            };
+
+            window.parent.postMessage({ type: 'iframe-error', error: errorDetails }, '*');
+            window.babelTransformError = errorDetails;
+          }
+        },
+        true
+      );
+    </script>
+
+    <script type="text/babel" data-type="module">
+      import ReactDOMClient from 'react-dom/client';
+
+      // App runs normally without our interference
+      // prettier-ignore
+      import React, { useState, useRef, useEffect, useCallback } from "react"
+
+export default function App() {
+  const editorRef = useRef(null)
+  const monacoRef = useRef(null)
+  const containerRef = useRef(null)
+  const keyboardCaptureAttached = useRef(false)
+  
+  const [state, setState] = useState('idle')
+  const [recording, setRecording] = useState([])
+  const [currentRecording, setCurrentRecording] = useState(null)
+  const [editorReady, setEditorReady] = useState(false)
+  const [playbackProgress, setPlaybackProgress] = useState(0)
+  const [playbackSpeed, setPlaybackSpeed] = useState(200) // percent
+  const [minDelayMs, setMinDelayMs] = useState(0)
+  const [maxDelayMs, setMaxDelayMs] = useState(1000)
+
+  const [suggestHooksStatus, setSuggestHooksStatus] = useState('Not Connected')
+  const [lastSuggestState, setLastSuggestState] = useState(0)
+  
+  const recordingStartTime = useRef(null)
+  const playbackController = useRef(null)
+  const stateRef = useRef('idle')
+  const suggestController = useRef(null)
+  const suggestWidget = useRef(null)
+  const keyboardBuffer = useRef([])
+  const suggestOpenDetected = useRef(false)
+  const pollingSuggestState = useRef(null)
+
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  const addEvent = useCallback((event) => {
+    if (stateRef.current === 'recording' && recordingStartTime.current) {
+      const timestampedEvent = {
+        ...event,
+        timestamp: Date.now() - recordingStartTime.current
+      }
+      console.log('📹 Recording event:', timestampedEvent.type, timestampedEvent.item?.label || timestampedEvent.key || timestampedEvent.method || '')
+      setRecording(prev => [...prev, timestampedEvent])
+    }
+  }, [])
+
+  // Hack to detect suggestion menu opening via DOM observation
+  const setupSuggestionMenuDetection = () => {
+    let widgetEl = null
+    let lastVisible = false
+
+    const isWidgetVisible = (el) => {
+      if (!el) return false
+      const attr = el.getAttribute('monaco-visible-content-widget')
+      const style = el.style
+      const ariaHidden = el.getAttribute('aria-hidden')
+      const visibleByAttr = attr === 'true'
+      const visibleByStyle = (!style || (style.display !== 'none' && style.visibility !== 'hidden'))
+      const actuallyInLayout = el.offsetParent !== null || el.getClientRects().length > 0
+      const ariaOk = ariaHidden !== 'true'
+      return (visibleByAttr || visibleByStyle) && ariaOk && actuallyInLayout
+    }
+
+    const handleVisibilityFlip = (reason) => {
+      if (!widgetEl) return
+      const visible = isWidgetVisible(widgetEl)
+      if (visible === lastVisible) return
+      lastVisible = visible
+      if (visible) {
+        console.log('💡 Suggestion widget shown (via attributes)', { reason })
+        suggestOpenDetected.current = true
+        if (stateRef.current === 'recording') {
+          addEvent({
+            type: 'suggestShow',
+            method: 'attr-observer',
+            reason,
+            recentKeys: keyboardBuffer.current.slice(-3)
+          })
+        }
+      } else {
+        console.log('❌ Suggestion widget hidden (via attributes)', { reason })
+        if (stateRef.current === 'recording' && suggestOpenDetected.current) {
+          addEvent({ type: 'suggestHide', method: 'attr-observer', reason })
+        }
+        suggestOpenDetected.current = false
+      }
+    }
+
+    const attrObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes') {
+          handleVisibilityFlip(m.attributeName)
+        }
+      }
+    })
+
+    const watchWidgetAttributes = () => {
+      if (!widgetEl) return
+      // Prime cached visibility then observe attributes that signal show/hide
+      lastVisible = isWidgetVisible(widgetEl)
+      attrObserver.observe(widgetEl, {
+        attributes: true,
+        attributeFilter: ['style', 'aria-hidden', 'monaco-visible-content-widget'],
+        subtree: false
+      })
+    }
+
+    const findWidget = () => {
+      widgetEl = containerRef.current?.querySelector?.('.editor-widget.suggest-widget[widgetid="editor.widget.suggestWidget"]') ||
+                 containerRef.current?.querySelector?.('.editor-widget.suggest-widget') ||
+                 document.querySelector('.editor-widget.suggest-widget')
+      if (widgetEl) {
+        console.log('🔎 Found suggest widget element', widgetEl)
+        watchWidgetAttributes()
+      }
+    }
+
+    const treeObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const el = node.matches?.('.editor-widget.suggest-widget') ? node : node.querySelector?.('.editor-widget.suggest-widget')
+            if (el) {
+              widgetEl = el
+              console.log('suggest widget (added)', el)
+              if (stateRef.current === 'recording' && !suggestOpenDetected.current && isWidgetVisible(el)) {
+                suggestOpenDetected.current = true
+                addEvent({
+                  type: 'suggestInferredOpen',
+                  method: 'dom-mutation',
+                  triggerKeys: keyboardBuffer.current.slice(-3)
+                })
+              }
+              watchWidgetAttributes()
+            }
+          }
+        })
+
+        mutation.removedNodes.forEach((node) => {
+          if (node === widgetEl || node.querySelector?.('.editor-widget.suggest-widget')) {
+            if (stateRef.current === 'recording' && suggestOpenDetected.current) {
+              addEvent({ type: 'suggestInferredClose', method: 'dom-mutation' })
+            }
+            suggestOpenDetected.current = false
+            try { attrObserver.disconnect() } catch {}
+            widgetEl = null
+            lastVisible = false
+          }
+        })
+      })
+    })
+
+    // Observe the entire editor container for suggestion widget mount/unmount
+    if (containerRef.current) {
+      treeObserver.observe(containerRef.current, { childList: true, subtree: true })
+    }
+
+    // Also try to hook an already-mounted widget
+    findWidget()
+
+    return () => { try { treeObserver.disconnect() } catch {}; try { attrObserver.disconnect() } catch {} }
+  }
+
+  // Enhanced keyboard event capture
+  const setupKeyboardCapture = () => {
+    console.log('[INIT] setupKeyboardCapture called')
+    if (keyboardCaptureAttached.current) {
+      console.log('[INIT] keyboard capture already attached, skipping')
+      return () => {}
+    }
+    if (!editorRef.current) {
+      console.warn('[INIT] setupKeyboardCapture: editorRef.current is null')
+      return () => {}
+    }
+
+    const editor = editorRef.current
+    keyboardCaptureAttached.current = true
+
+    // Also attach to the hidden textarea input area directly (capture phase)
+    const container = containerRef.current
+    let inputDisposer = null
+    try {
+      const input = container?.querySelector?.('.monaco-editor textarea.inputarea')
+      if (input) {
+        console.log('[INIT] Attaching inputarea keydown (capture)')
+        const inputHandler = (e) => {
+          console.log('REC inputarea keydown:', e.key)
+          const isNavigationKey = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End','Tab','Enter','Escape'].includes(e.key)
+          const isModifierKey = ['Control','Shift','Alt','Meta'].includes(e.key)
+          // Record keys that matter for playback
+          if (isNavigationKey || isModifierKey || e.ctrlKey || e.altKey) {
+            addEvent({
+              type: 'keyDown',
+              key: e.key,
+              code: e.code,
+              keyCode: e.keyCode,
+              ctrlKey: e.ctrlKey,
+              shiftKey: e.shiftKey,
+              altKey: e.altKey,
+              metaKey: e.metaKey,
+              category: isNavigationKey ? 'navigation' : isModifierKey ? 'modifier' : 'special'
+            })
+          }
+          // Detect potential suggestion triggers
+          if (e.key === '.' || (e.ctrlKey && e.key === ' ')) {
+            console.log('🎯 Potential suggestion trigger detected:', e.key)
+            setTimeout(() => {
+              const suggestWidget = suggestController.current?._widget?.value
+              if (suggestWidget?.isVisible?.()) {
+                console.log('💡 Suggestion opened after trigger')
+                addEvent({
+                  type: 'suggestTriggered',
+                  method: 'keyboard-trigger',
+                  triggerKey: e.key
+                })
+              }
+            }, 50)
+          }
+        }
+        input.addEventListener('keydown', inputHandler, true)
+        inputDisposer = () => input.removeEventListener('keydown', inputHandler, true)
+      } else {
+        console.warn('[INIT] inputarea not found at attach time')
+      }
+    } catch (e) {
+      console.warn('[INIT] inputarea attach failed', e)
+    }
+
+    return () => {
+      try { inputDisposer && inputDisposer() } catch {}
+      keyboardCaptureAttached.current = false
+    }
+  }
+
+  // Ensure keyboard capture is attached when editor is ready
+  useEffect(() => {
+    if (!editorReady) {
+      console.warn('[INIT] keyboard capture not attached: editorReady =', editorReady)
+      return
+    }
+    const disposer = setupKeyboardCapture()
+    console.log('[INIT] keyboard capture attached')
+    return () => {
+      try { disposer && disposer() } catch {}
+      console.log('[INIT] keyboard capture detached')
+    }
+  }, [editorReady])
+
+  // Enhanced suggest detection
+  function setupComprehensiveSuggestHooks(editor) {
+    console.log('🔧 Setting up comprehensive suggest hooks...')
+    
+    const suggestController = editor.getContribution('editor.contrib.suggestController')
+    if (!suggestController) {
+      console.warn('No suggest controller found')
+      return false
+    }
+
+    suggestController.current = suggestController
+
+    // Enhanced polling with better state detection
+    const startPolling = () => {
+      if (pollingSuggestState.current) return
+      
+      pollingSuggestState.current = setInterval(() => {
+        const suggestWidget = suggestController._widget?.value
+        if (suggestWidget) {
+          const currentState = suggestWidget._state || 0
+          const isVisible = suggestWidget.isVisible?.() || false
+          
+          if (currentState !== lastSuggestState) {
+            console.log(`🔄 Suggest state changed: ${lastSuggestState} -> ${currentState} (visible: ${isVisible})`)
+            
+            if ((currentState === 2 || isVisible) && lastSuggestState !== 2) {
+              console.log('💡 Suggestion widget opened (via polling)')
+              suggestOpenDetected.current = true
+              addEvent({ 
+                type: 'suggestShow', 
+                method: 'polling', 
+                state: currentState,
+                recentKeys: keyboardBuffer.current.slice(-3)
+              })
+            } else if (currentState === 0 && !isVisible && lastSuggestState === 2) {
+              console.log('❌ Suggestion widget closed (via polling)')
+              suggestOpenDetected.current = false
+              addEvent({ type: 'suggestHide', method: 'polling', state: currentState })
+            }
+            
+            setLastSuggestState(currentState)
+          }
+        }
+      }, 30)
+    }
+
+    // Hook widget methods
+    const suggestWidget = suggestController._widget?.value
+    if (suggestWidget) {
+      suggestWidget.current = suggestWidget
+      
+      // Hook focus changes in list
+      const list = suggestWidget._list
+      if (list) {
+        const originalSetFocus = list.setFocus.bind(list)
+        list.setFocus = function (indexes) {
+          const focusedItem = list._items?.[indexes[0]]
+          if (focusedItem?.suggestion) {
+            console.log("➡️ Suggestion focused:", focusedItem.suggestion.label)
+            addEvent({
+              type: 'suggestFocus',
+              method: 'setFocus',
+              index: indexes[0],
+              item: {
+                label: focusedItem.suggestion.label,
+                kind: focusedItem.suggestion.kind,
+                insertText: focusedItem.suggestion.insertText
+              }
+            })
+          }
+          return originalSetFocus(indexes)
+        }
+      }
+    }
+
+    // Hook acceptance with better item detection
+    const originalAccept = suggestController.acceptSelectedSuggestion.bind(suggestController)
+    suggestController.acceptSelectedSuggestion = function (...args) {
+      const suggestWidget = suggestController._widget?.value
+      let selected = null
+      
+      // Try multiple methods to get selected item
+      try {
+        selected = suggestWidget?.getFocusedItem?.()?.item ||
+                  suggestWidget?._list?.getFocusedElements?.()?.[0] ||
+                  suggestWidget?._list?.getSelectedElements?.()?.[0]
+      } catch (e) {
+        console.warn('Could not get selected item:', e)
+      }
+      
+      console.log("✅ Suggestion accepted:", selected?.suggestion?.label || 'unknown')
+      addEvent({
+        type: 'suggestAccept',
+        method: 'acceptSelectedSuggestion',
+        item: selected?.suggestion ? {
+          label: selected.suggestion.label,
+          kind: selected.suggestion.kind,
+          insertText: selected.suggestion.insertText
+        } : null
+      })
+      
+      suggestOpenDetected.current = false
+      return originalAccept(...args)
+    }
+
+    startPolling()
+    setSuggestHooksStatus('All Methods + Keyboard Hooked')
+    return true
+  }
+
+  class PlaybackController {
+    constructor(events, speed, onProgress, onDone) {
+      this.events = events
+      this.speed = speed
+      this.onProgress = onProgress
+      this.onDone = onDone
+      this.isRunning = false
+      this.currentIndex = 0
+      this.minDelayMs = 0
+      this.maxDelayMs = 1000
+    }
+
+    async start() {
+      if (this.isRunning || this.currentIndex >= this.events.length) return
+      
+      this.isRunning = true
+      console.log('🎬 Starting playback with', this.events.length, 'events')
+      
+      await this.processEventsSequentially()
+    }
+
+    async processEventsSequentially() {
+      for (let i = this.currentIndex; i < this.events.length && this.isRunning; i++) {
+        const event = this.events[i]
+        const prevEvent = this.events[i - 1]
+        // Honor recorded timing with speed scaling
+        const rawDelay = prevEvent ? (event.timestamp - prevEvent.timestamp) * (100 / this.speed) : 0
+        const delay = Math.min(this.maxDelayMs, Math.max(this.minDelayMs, rawDelay))
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay))
+        }
+        // Right after opening, ensure widget is actually ready before first nav (adaptive, minimal)
+        if (event.category === 'navigation') {
+          const prev = this.events[i - 1]
+          if (prev && (prev.type === 'suggestShow' || prev.type === 'suggestTriggered' || prev.type === 'suggestInferredOpen')) {
+            await this.ensureSuggestReady(true)
+          }
+        }
+        if (!this.isRunning) break
+        console.log('🎯 Executing event', i, ':', event.type, event.item?.label || event.key || event.triggerKey || '')
+        await this.executeEvent(event)
+        this.onProgress(i, this.events.length)
+      }
+      
+      if (this.isRunning) {
+        console.log('🎬 Playback completed')
+        this.complete()
+      }
+    }
+
+    async sleepAdaptive(baseMs = 10) {
+      // If user wants minimal/zero delay or very high speed, don't sleep
+      if (this.maxDelayMs === 0 || this.maxDelayMs <= 5 || this.speed >= 400) return
+      const scaled = baseMs * (100 / this.speed)
+      const clamped = Math.min(this.maxDelayMs, Math.max(this.minDelayMs, scaled))
+      if (clamped > 0) {
+        await new Promise(r => setTimeout(r, clamped))
+      }
+    }
+
+    async waitFor(condFn, timeoutBaseMs = 300, pollBaseMs = 10) {
+      const start = Date.now()
+      const timeoutScaled = timeoutBaseMs * (100 / this.speed)
+      const timeoutClamped = Math.min(
+        this.maxDelayMs === 0 ? 0 : this.maxDelayMs,
+        Math.max(this.minDelayMs, timeoutScaled)
+      )
+      // If no waiting budget, just check once
+      if (timeoutClamped === 0) return !!condFn()
+      while (Date.now() - start < timeoutClamped) {
+        if (!this.isRunning) return false
+        if (condFn()) return true
+        await this.sleepAdaptive(pollBaseMs)
+      }
+      return !!condFn()
+    }
+
+    async ensureSuggestReady(soft = false) {
+      try {
+        const ctrl = editorRef.current.getContribution('editor.contrib.suggestController')
+        const widget = ctrl?._widget?.value
+        const list = widget?._list
+        const ready = () => widget?.isVisible?.() && (list?._items?.length > 0)
+        if (ready()) return true
+        const timeout = soft ? 120 : 300
+        return await this.waitFor(ready, timeout, 8)
+      } catch {
+        return false
+      }
+    }
+
+    async executeEvent(event) {
+      if (!editorRef.current || !monacoRef.current) return
+
+      try {
+        switch (event.type) {
+          case 'contentChange':
+            // If this change was recorded while suggestions were visible, ensure we want it open
+            if (event.duringSuggest) {
+              this.suggestSessionActive = true
+              this.desiredSuggestOpen = true
+            }
+            for (const change of event.changes) {
+              const range = new monacoRef.current.Range(
+                change.range.startLineNumber,
+                change.range.startColumn,
+                change.range.endLineNumber,
+                change.range.endColumn
+              )
+              // Always apply via executeEdits for correctness; we will re-open widget if needed
+              editorRef.current.executeEdits('playback', [{ range, text: change.text }])
+            }
+            // If we want the widget open, re-trigger after edit
+            if (this.desiredSuggestOpen) {
+              editorRef.current.trigger('keyboard', 'editor.action.triggerSuggest', {})
+              await this.waitForSuggestWidget()
+              // Restore last focused item if we have it
+              if (this.lastFocusedLabel || (this.lastFocusedIndex ?? null) !== null) {
+                try {
+                  await this.selectSuggestionByLabel(this.lastFocusedLabel, this.lastFocusedIndex)
+                } catch {}
+              }
+            }
+            break
+          case 'cursorPosition':
+            editorRef.current.setPosition(event.position)
+            break
+            
+          case 'keyDown':
+            console.log('🎯 Simulating key:', event.key)
+            if (event.key === 'Enter' && this.suggestSessionActive) {
+              // Skip Enter to avoid inserting newline when accept originally happened
+              console.log('⏭️ Skipping Enter during suggest session')
+              break
+            }
+            if (event.key === 'Escape' && this.suggestSessionActive) {
+              // Close suggestions when Escape was used in the recording
+              const controller = editorRef.current.getContribution('editor.contrib.suggestController')
+              if (controller?.cancelSuggestWidget) {
+                controller.cancelSuggestWidget()
+              }
+              this.suggestSessionActive = false
+              this.desiredSuggestOpen = false
+              break
+            }
+            if (event.category === 'navigation') {
+              await this.simulateNavigationKey(event)
+            }
+            break
+            
+          case 'suggestTriggered':
+          case 'suggestInferredOpen':
+          case 'suggestShow':
+            console.log('🎯 Opening suggestion widget')
+            
+            // If we have trigger keys, replay them first
+            if (event.triggerKeys) {
+              for (const keyEvent of event.triggerKeys) {
+                console.log('🎯 Replaying trigger key:', keyEvent.key)
+              }
+            }
+            
+            editorRef.current.trigger('keyboard', 'editor.action.triggerSuggest', {})
+            this.suggestSessionActive = true
+            this.desiredSuggestOpen = true
+            
+            // Wait for widget to appear
+            await this.waitForSuggestWidget()
+            break
+            
+          case 'suggestFocus':
+            if (event.item?.label) {
+              console.log('🎯 Focusing suggestion:', event.item.label)
+              await this.selectSuggestionByLabel(event.item.label, event.index)
+              this.lastFocusedLabel = event.item.label
+              this.lastFocusedIndex = event.index
+            }
+            break
+            
+          case 'suggestAccept':
+            // Do not apply accept during playback; rely on contentChange events to reflect text
+            console.log('⏭️ Skipping apply of suggestAccept; closing widget to mirror UX')
+            const acceptController = editorRef.current.getContribution('editor.contrib.suggestController')
+            if (acceptController?.cancelSuggestWidget) {
+              acceptController.cancelSuggestWidget()
+            }
+            this.suggestSessionActive = false
+            this.desiredSuggestOpen = false
+            break
+            
+          case 'suggestHide':
+          case 'suggestInferredClose':
+            // Widget will close automatically, but we can force it
+            const controller = editorRef.current.getContribution('editor.contrib.suggestController')
+            if (controller?.cancelSuggestWidget) {
+              controller.cancelSuggestWidget()
+            }
+            this.suggestSessionActive = false
+            this.desiredSuggestOpen = false
+            break
+        }
+      } catch (error) {
+        console.warn('Error executing event:', error)
+      }
+    }
+
+    async simulateNavigationKey(keyEvent) {
+      const editor = editorRef.current
+      try { editor?.focus?.() } catch {}
+
+      // Issue Monaco commands first without gating on visibility to reduce race/mismatch
+      try {
+        if (keyEvent.key === 'ArrowDown') {
+          editor?.trigger('playback', 'selectNextSuggestion', {})
+        } else if (keyEvent.key === 'ArrowUp') {
+          editor?.trigger('playback', 'selectPrevSuggestion', {})
+        }
+        // Give the command a microtask to apply
+        await new Promise(r => setTimeout(r, 0))
+      } catch {}
+
+      // Fallback path: fresh controller fetch and manual list focus
+      const ctrl = editor?.getContribution?.('editor.contrib.suggestController')
+      const widget = ctrl?._widget?.value
+      const list = widget?._list
+      if (!widget || !list) return
+
+      // Adaptive readiness check (honors speed/min/max)
+      await this.ensureSuggestReady(true)
+      const itemsLen = list._items?.length || 0
+      if (itemsLen === 0) return
+
+      try { list.domFocus?.() } catch {}
+      const before = (list.getFocus?.() || [])[0] ?? -1
+      console.log('NAV before:', { before, itemsLen })
+
+      let after = before
+      if (keyEvent.key === 'ArrowDown') {
+        const newIndex = Math.min(((before || 0) + 1), itemsLen - 1)
+        list.setFocus([newIndex])
+        list.reveal?.(newIndex)
+        after = newIndex
+      } else if (keyEvent.key === 'ArrowUp') {
+        const current = before < 0 ? 0 : before
+        const newIndex = Math.max(current - 1, 0)
+        list.setFocus([newIndex])
+        list.reveal?.(newIndex)
+        after = newIndex
+      }
+      console.log('NAV after:', { after })
+    }
+
+    async waitForSuggestWidget() {
+      // Adaptive: honor playback speed and min/max clamps
+      const ok = await this.waitFor(() => {
+        const widget = suggestController.current?._widget?.value
+        return widget?.isVisible?.()
+      }, 200, 8)
+      return ok
+    }
+
+    async selectSuggestionByLabel(targetLabel, preferredIndex) {
+      try {
+        const suggestController = editorRef.current.getContribution('editor.contrib.suggestController')
+        const suggestWidget = suggestController?._widget?.value
+        const list = suggestWidget?._list
+        const items = list?._items || []
+        
+        console.log('Available suggestions:', items.map((item, i) => `${i}: ${item.suggestion?.label}`))
+        
+        // Try preferred index first
+        if (preferredIndex >= 0 && preferredIndex < items.length && 
+            items[preferredIndex]?.suggestion?.label === targetLabel) {
+          console.log('Using preferred index:', preferredIndex)
+          list.setFocus([preferredIndex])
+          return
+        }
+        
+        // Fallback to searching by label
+        const targetIndex = items.findIndex(item => 
+          item.suggestion?.label === targetLabel
+        )
+        
+        if (targetIndex >= 0) {
+          console.log('Found target suggestion at index:', targetIndex)
+          list.setFocus([targetIndex])
+        } else {
+          console.warn('Could not find suggestion:', targetLabel)
+        }
+      } catch (error) {
+        console.warn('Error selecting suggestion:', error)
+      }
+    }
+
+    stop() {
+      this.isRunning = false
+    }
+
+    complete() {
+      this.isRunning = false
+      this.onDone?.()
+    }
+
+    async seekTo(targetIndex) {
+      // Only allow forward seeking for now to avoid state rewind complexity
+      if (targetIndex <= this.currentIndex) return
+      const end = Math.min(targetIndex, this.events.length - 1)
+      for (let i = this.currentIndex; i <= end && this.isRunning; i++) {
+        const event = this.events[i]
+        // Execute without delay for fast-forward
+        await this.executeEvent(event)
+        this.onProgress(i, this.events.length)
+      }
+      this.currentIndex = end + 1
+      if (this.currentIndex >= this.events.length) {
+        this.stop()
+        this.onDone?.()
+      }
+    }
+  }
+
+  const transition = useCallback((newState) => {
+    console.log('State transition:', stateRef.current, '->', newState)
+    
+    switch (newState) {
+      case 'recording':
+        if (!editorRef.current || !editorReady) return
+        setRecording([])
+        keyboardBuffer.current = []
+        suggestOpenDetected.current = false
+        recordingStartTime.current = Date.now()
+        
+        const initialState = {
+          type: 'initialState',
+          timestamp: 0,
+          content: editorRef.current.getValue(),
+          position: editorRef.current.getPosition(),
+          selection: editorRef.current.getSelection()
+        }
+        setRecording([initialState])
+        setState('recording')
+        break
+        
+      case 'idle':
+        if (stateRef.current === 'recording') {
+          console.log('💾 Saving recording with', recording.length, 'events')
+          setCurrentRecording([...recording])
+        }
+        if (playbackController.current) {
+          playbackController.current.stop()
+          playbackController.current = null
+        }
+        setPlaybackProgress(0)
+        setState('idle')
+        break
+        
+      case 'playing':
+        if (!currentRecording?.length || !editorRef.current) return
+        
+        const initial = currentRecording.find(e => e.type === 'initialState')
+        if (initial) {
+          console.log('🔄 Resetting to initial state for playback')
+          editorRef.current.setValue(initial.content)
+          editorRef.current.setPosition(initial.position)
+          editorRef.current.setSelection(initial.selection)
+        }
+        
+        setState('playing')
+        
+        playbackController.current = new PlaybackController(
+          currentRecording,
+          playbackSpeed,
+          (index, total) => setPlaybackProgress(Math.round((index / total) * 100)),
+          () => transition('idle')
+        )
+        // Apply current clamp settings
+        playbackController.current.minDelayMs = minDelayMs
+        playbackController.current.maxDelayMs = maxDelayMs
+        // Start immediately (no fixed startup delay)
+        if (playbackController.current) {
+          playbackController.current.start()
+        }
+        break
+    }
+  }, [recording, currentRecording, editorReady, playbackSpeed])
+
+  // Live-sync playback settings while running
+  useEffect(() => {
+    if (playbackController.current) {
+      playbackController.current.speed = playbackSpeed
+      playbackController.current.minDelayMs = minDelayMs
+      playbackController.current.maxDelayMs = maxDelayMs
+    }
+  }, [playbackSpeed, minDelayMs, maxDelayMs])
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js'
+    script.onload = () => {
+      window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' } })
+      window.require(['vs/editor/editor.main'], () => {
+        monacoRef.current = window.monaco
+        initializeEditor()
+      })
+    }
+    document.head.appendChild(script)
+    return () => {
+      if (script.parentNode) script.parentNode.removeChild(script)
+      if (pollingSuggestState.current) {
+        clearInterval(pollingSuggestState.current)
+      }
+    }
+  }, [])
+
+  const initializeEditor = () => {
+    if (!monacoRef.current || !containerRef.current) return
+
+    monacoRef.current.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monacoRef.current.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+      noEmit: true,
+      jsx: monacoRef.current.languages.typescript.JsxEmit.React
+    })
+
+    const defaultCode = `// Try typing "user." to see suggestions
+interface User {
+  name: string;
+  age: number;
+  email: string;
+  isActive: boolean;
+  profile: {
+    bio: string;
+    avatar: string;
+    settings: {
+      theme: string;
+      notifications: boolean;
+    };
+  };
+}
+
+const user: User = {
+  name: "John",
+  age: 30,
+  email: "john@example.com",
+  isActive: true,
+  profile: {
+    bio: "Software developer",
+    avatar: "avatar.jpg",
+    settings: {
+      theme: "dark",
+      notifications: true
+    }
+  }
+};
+
+// Type "user." here to trigger autocomplete:
+`
+
+    editorRef.current = monacoRef.current.editor.create(containerRef.current, {
+      value: defaultCode,
+      language: 'typescript',
+      theme: 'vs-dark',
+      automaticLayout: true,
+      fontSize: 14,
+      quickSuggestions: {
+        other: true,
+        comments: true,
+        strings: true
+      },
+      suggestOnTriggerCharacters: true,
+      acceptSuggestionOnCommitCharacter: true,
+      acceptSuggestionOnEnter: 'on'
+    })
+
+    setTimeout(() => {
+      setupEventListeners()
+      setupComprehensiveSuggestHooks(editorRef.current)
+      setupKeyboardCapture()
+      setupSuggestionMenuDetection()
+      setEditorReady(true)
+    }, 1000)
+  }
+
+  const setupEventListeners = () => {
+    if (!editorRef.current) return
+
+    editorRef.current.onDidChangeModelContent((e) => {
+      addEvent({
+        type: 'contentChange',
+        changes: e.changes.map(change => ({
+          range: {
+            startLineNumber: change.range.startLineNumber,
+            startColumn: change.range.startColumn,
+            endLineNumber: change.range.endLineNumber,
+            endColumn: change.range.endColumn
+          },
+          text: change.text,
+          rangeLength: change.rangeLength
+        }))
+      })
+    })
+
+    editorRef.current.onDidChangeCursorPosition((e) => {
+      addEvent({
+        type: 'cursorPosition',
+        position: {
+          lineNumber: e.position.lineNumber,
+          column: e.position.column
+        }
+      })
+    })
+  }
+
+  return (
+    <div className="h-screen w-screen bg-[#242424] flex flex-col">
+      <div className="bg-[#ff70a6] border-b-4 border-[#242424] p-4 flex items-center gap-4 flex-wrap">
+        <button
+          onClick={() => transition(state === 'recording' ? 'idle' : 'recording')}
+          disabled={!editorReady}
+          className={`px-4 py-2 border-4 border-[#242424] font-bold text-[#242424] ${
+            state === 'recording' ? 'bg-[#ffd670]' : 'bg-[#70d6ff]'
+          }`}
+        >
+          {state === 'recording' ? '⏹ Stop Recording' : '⏺ Start Recording'}
+        </button>
+
+        <button
+          onClick={() => transition(state === 'playing' ? 'idle' : 'playing')}
+          disabled={!currentRecording?.length}
+          className={`px-4 py-2 border-4 border-[#242424] font-bold text-[#242424] ${
+            state === 'playing' ? 'bg-[#ffd670]' : 'bg-[#e9ff70]'
+          }`}
+        >
+          {state === 'playing' ? '⏸ Stop Playback' : '▶ Play Recording'}
+        </button>
+
+        <div className="controls">
+          <label style={{ marginLeft: 12 }}>Speed: {playbackSpeed}%</label>
+          <input
+            type="range"
+            min={10}
+            max={1000}
+            step={10}
+            value={playbackSpeed}
+            onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+          />
+          <label style={{ marginLeft: 12 }}>Min delay (ms)</label>
+          <input type="number" value={minDelayMs} min={0} onChange={e => setMinDelayMs(Math.max(0, Number(e.target.value)||0))} style={{ width: 80 }} />
+          <label style={{ marginLeft: 8 }}>Max delay (ms)</label>
+          <input type="number" value={maxDelayMs} min={0} onChange={e => setMaxDelayMs(Math.max(0, Number(e.target.value)||0))} style={{ width: 80 }} />
+        </div>
+
+        <div className="flex gap-4 text-[#242424] font-bold text-sm">
+          <div className={`flex items-center gap-1 ${state === 'recording' ? 'animate-pulse' : ''}`}>
+            <div className={`w-3 h-3 rounded-full ${
+              state === 'recording' ? 'bg-red-500' : state === 'playing' ? 'bg-blue-500' : 'bg-green-500'
+            }`}></div>
+            {state === 'recording' ? 'Recording' : state === 'playing' ? 'Playing' : 'Ready'}
+          </div>
+          
+          <div>Events: {recording.length}</div>
+          
+          {currentRecording && (
+            <div>Saved: {currentRecording.length}</div>
+          )}
+          
+          <div>Keys: {keyboardBuffer.current.length}</div>
+        </div>
+      </div>
+
+      <div 
+        ref={containerRef} 
+        className="flex-1 border-4 border-[#242424] m-4"
+      />
+
+      <div className="bg-[#e9ff70] border-t-4 border-[#242424] p-2 text-[#242424] font-bold text-sm flex justify-between items-center">
+        <div>
+          💡 <em>Type "user.profile." then use ↑↓ arrow keys to navigate suggestions, Enter to accept!</em>
+        </div>
+        <div className={`px-2 py-1 border-2 border-[#242424] rounded text-xs ${
+          suggestHooksStatus.includes('Keyboard') ? 'bg-green-200' : 'bg-yellow-200'
+        }`}>
+          {suggestHooksStatus}
+        </div>
+      </div>
+
+      {state === 'playing' && (
+        <div className="footer" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: '#111', color: '#fff', padding: '8px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span>Progress: {playbackProgress}%</span>
+            <input
+              type="range"
+              min={0}
+              max={currentRecording ? currentRecording.length - 1 : 0}
+              value={Math.round(((playbackProgress/100) * ((currentRecording?.length||1)-1)))}
+              disabled
+              style={{ flex: 1 }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+      // prettier-ignore-end
+
+      const rootElement = document.getElementById('container');
+      // Check for babel errors before attempting to render
+      if (!window.babelTransformError) {
+        ReactDOMClient.createRoot(rootElement).render(<App />);
+      } else {
+        // Create fallback error UI if babel failed
+        rootElement.innerHTML = `
+          <div style="padding: 20px; color: red; font-family: monospace; white-space: pre-wrap;">
+            <h2>Syntax Error</h2>
+            <p>${window.babelTransformError.message}</p>
+          </div>
+        `;
+      }
+    </script>
+  </body>
+</html>
