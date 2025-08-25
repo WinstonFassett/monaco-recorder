@@ -198,31 +198,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       const list = widget?._list;
       // Patch focus via shared helper
       patchSuggestListFocusIfNeeded(list);
-
-      // Wrap acceptance to record the selected item
-      if (ctrl.acceptSelectedSuggestion && !originalAcceptSelected) {
-        const origAccept = ctrl.acceptSelectedSuggestion.bind(ctrl);
-        originalAcceptSelected = origAccept;
-        ctrl.acceptSelectedSuggestion = function(...args) {
-          let selected = null;
-          try {
-            const w = ctrl._widget?.value;
-            selected = w?.getFocusedItem?.()?.item ||
-                       w?._list?.getFocusedElements?.()?.[0] ||
-                       w?._list?.getSelectedElements?.()?.[0] || null;
-          } catch {}
-          stamp({
-            type: 'suggestAccept',
-            method: 'acceptSelectedSuggestion',
-            item: selected?.suggestion ? {
-              label: selected.suggestion.label,
-              kind: selected.suggestion.kind,
-              insertText: selected.suggestion.insertText,
-            } : null,
-          });
-          return origAccept(...args);
-        };
-      }
     } catch {}
   }
 
@@ -560,14 +535,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
             // Update last known focus from recording (used to restore after re-open)
             lastFocusedLabel = ev.item?.label ?? null;
             lastFocusedIndex = Number.isInteger(ev.index) ? ev.index : null;
-            break;
-          }
-          case 'suggestAccept': {
-            // Mirror index.html: do not apply accept; rely on recorded contentChange
-            try { editor.focus?.(); } catch {}
-            try { editor.trigger('keyboard', 'hideSuggestWidget', {}); } catch {}
-            suggestSessionActive = false;
-            desiredSuggestOpen = false;
             break;
           }
           case 'contentChange': {
