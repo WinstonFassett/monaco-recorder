@@ -33,7 +33,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   let lastSuggestVisible = false;
   let lastSuggestState = 0;
   let suggestDetectionCleanup = null;
-  const keyboardBuffer = [];
+  
 
   // Suggest hook originals to restore
   let patchedSuggestController = null;
@@ -123,7 +123,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
         if (visible === lastVisible) return;
         lastVisible = visible;
         if (visible) {
-          stamp({ type: 'suggestShow', method: 'attr-observer', reason, recentKeys: keyboardBuffer.slice(-3) });
+          stamp({ type: 'suggestShow', method: 'attr-observer', reason });
         } else {
           stamp({ type: 'suggestHide', method: 'attr-observer', reason });
         }
@@ -206,10 +206,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       if (!input) return;
 
       const handler = (e) => {
-        try {
-          keyboardBuffer.push({ key: e.key, code: e.code });
-          if (keyboardBuffer.length > 20) keyboardBuffer.shift();
-        } catch {}
         // Stamp navigation/modifier keys for context (always when suggest capture is enabled)
         const nav = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End','Tab','Enter','Escape'];
         const isModifier = ['Control','Shift','Alt','Meta'].includes(e.key);
@@ -227,18 +223,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 
         if (!opts.captureSuggest) return;
 
-        // Detect common triggers ("." and Ctrl/Cmd+Space)
-        const ctrlSpace = (e.ctrlKey || e.metaKey) && e.key === ' ';
-        if (e.key === '.' || ctrlSpace) {
-          setTimeout(() => {
-            const { widget, list } = getSuggestParts();
-            if (widget?.isVisible?.() && (list?._items?.length || 0) > 0) {
-              // DIAGNOSTIC-ONLY: suggestion likely opened due to keyboard; safe to delete
-              stamp({ type: 'suggestTriggered', method: 'keyboard-trigger', triggerKey: ctrlSpace ? 'Ctrl+Space' : '.', recentKeys: keyboardBuffer.slice(-3) });
-            }
-          }, 40);
-        }
-
         // While visible, capture navigation and accept intent
         const { widget, list } = getSuggestParts();
         const visible = widget?.isVisible?.();
@@ -246,14 +230,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
           const focusIdx = (list.getFocus?.() || [])[0] ?? -1;
           const items = list._items || [];
           const labelAt = (i) => (items[i]?.suggestion?.label ?? null);
-          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            // DIAGNOSTIC-ONLY: navigation intent; playback uses recorded keyDown category
-            stamp({ type: 'suggestNavigate', direction: e.key === 'ArrowDown' ? 'down' : 'up', fromIndex: focusIdx, fromLabel: labelAt(focusIdx) });
-          } else if (e.key === 'Enter') {
-            // acceptance intent (actual accept recorded by wrapped method)
-            // DIAGNOSTIC-ONLY: acceptance intent; playback relies on contentChange
-            stamp({ type: 'suggestAcceptIntent', index: focusIdx, label: labelAt(focusIdx) });
-          } else if (e.key === 'Escape') {
+          if (e.key === 'Escape') {
             stamp({ type: 'suggestHide', method: 'esc' });
           }
         }
@@ -506,26 +483,20 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
             }
             break;
           }
-          case 'suggestHide':
-          case 'suggestInferredClose': {
+          case 'suggestHide': {
             try { editor.focus?.(); } catch {}
             try { editor.trigger('keyboard', 'hideSuggestWidget', {}); } catch {}
             suggestSessionActive = false;
             desiredSuggestOpen = false;
             break;
           }
-          case 'suggestTriggered':
           case 'suggestShow':
-          case 'suggestInferredOpen': {
+          {
             try { editor.focus?.(); } catch {}
             try { editor.trigger('keyboard', 'editor.action.triggerSuggest', {}); } catch {}
             suggestSessionActive = true;
             desiredSuggestOpen = true;
             await waitForSuggestWidget(false);
-            break;
-          }
-          case 'suggestNavigate': {
-            // Navigation is driven by recorded keyDown ArrowUp/Down like index.html; ignore this if present
             break;
           }
           case 'suggestFocus': {
