@@ -30,14 +30,10 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   let startTs = 0;
   let events = [];
   let inputCleanup = null;
-  let lastSuggestVisible = false;
-  let lastSuggestState = 0;
   let suggestDetectionCleanup = null;
   
 
   // Suggest hook originals to restore
-  let patchedSuggestController = null;
-  let originalAcceptSelected = null;
   let originalListSetFocus = null;
 
   // --- Playback state ---
@@ -51,10 +47,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   function stamp(ev) {
   const e = { ...ev, timestamp: now() - startTs };
   events.push(e);
-  try {
-    const tag = e.item?.label || e.key || e.triggerKey || e.method || '';
-    console.log('[REC]', e.type, tag, e);
-  } catch {}
 }
   // Small sleep utility available to helpers (e.g., simulateNavigationKey)
   function sleep(ms) { return ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve(); }
@@ -190,7 +182,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     try {
       const ctrl = editor.getContribution('editor.contrib.suggestController');
       if (!ctrl) return;
-      patchedSuggestController = ctrl;
       const widget = ctrl?._widget?.value;
       const list = widget?._list;
       // Patch focus via shared helper
@@ -206,33 +197,21 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       if (!input) return;
 
       const handler = (e) => {
-        // Stamp navigation/modifier keys for context (always when suggest capture is enabled)
-        const nav = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End','Tab','Enter','Escape'];
-        const isModifier = ['Control','Shift','Alt','Meta'].includes(e.key);
+        // Stamp only navigation keys needed for playback
         if (opts.captureKeys || opts.captureSuggest) {
-          if (nav.includes(e.key) || isModifier || e.ctrlKey || e.altKey || e.metaKey) {
-            // DIAGNOSTIC-ONLY: generic keyDown stamps for visibility; safe to delete once stable
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             const base = { type: 'keyDown', key: e.key, code: e.code, ctrlKey: !!e.ctrlKey, altKey: !!e.altKey, metaKey: !!e.metaKey, shiftKey: !!e.shiftKey };
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-              stamp({ ...base, category: 'navigation' });
-            } else {
-              stamp(base);
-            }
+            stamp({ ...base, category: 'navigation' });
           }
         }
 
         if (!opts.captureSuggest) return;
 
-        // While visible, capture navigation and accept intent
-        const { widget, list } = getSuggestParts();
+        // Hide when visible and user presses Escape
+        const { widget } = getSuggestParts();
         const visible = widget?.isVisible?.();
-        if (visible && list) {
-          const focusIdx = (list.getFocus?.() || [])[0] ?? -1;
-          const items = list._items || [];
-          const labelAt = (i) => (items[i]?.suggestion?.label ?? null);
-          if (e.key === 'Escape') {
-            stamp({ type: 'suggestHide', method: 'esc' });
-          }
+        if (visible && e.key === 'Escape') {
+          stamp({ type: 'suggestHide', method: 'esc' });
         }
       };
 
@@ -323,16 +302,11 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 
     // Restore suggest patches
     try {
-      if (patchedSuggestController && originalAcceptSelected) {
-        patchedSuggestController.acceptSelectedSuggestion = originalAcceptSelected;
-      }
       const { list } = getSuggestParts();
       if (list && originalListSetFocus) {
         list.setFocus = originalListSetFocus;
       }
     } catch {}
-    patchedSuggestController = null;
-    originalAcceptSelected = null;
     originalListSetFocus = null;
 
     return getEvents();
@@ -453,13 +427,9 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 
         // If the previous event opened suggestions, ensure widget is ready before executing this one
         const prev = list[i - 1];
-        if (prev && (prev.type === 'suggestShow' || prev.type === 'suggestTriggered' || prev.type === 'suggestInferredOpen')) {
+        if (prev && prev.type === 'suggestShow') {
           await waitForSuggestWidget(true);
         }
-        try {
-          const tag = ev.item?.label || ev.key || ev.direction || ev.method || '';
-          console.log('[PLAY]', ev.type, tag, ev);
-        } catch {}
         switch (ev.type) {
           case 'initialState': {
             // Already applied once before loop; do not re-apply to avoid cursor jumps
