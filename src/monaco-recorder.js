@@ -163,16 +163,13 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
               const el = node.matches?.('.editor-widget.suggest-widget') ? node : node.querySelector?.('.editor-widget.suggest-widget');
               if (el) {
                 widgetEl = el;
-                if (isWidgetVisible(el)) {
-                  stamp({ type: 'suggestInferredOpen', method: 'dom-mutation', recentKeys: keyboardBuffer.slice(-3) });
-                }
+                // No inferred stamp; rely on attribute observer for show/hide
                 watchWidgetAttributes();
               }
             }
           });
           mutation.removedNodes.forEach((node) => {
             if (node === widgetEl || node.querySelector?.('.editor-widget.suggest-widget')) {
-              stamp({ type: 'suggestInferredClose', method: 'dom-mutation' });
               try { attrObserver.disconnect(); } catch {}
               widgetEl = null;
               lastVisible = false;
