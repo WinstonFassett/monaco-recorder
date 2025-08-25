@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monaco Recorder Demos</title>
+    <style>
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; 
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 40px 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      h1 { color: #0066cc; margin-bottom: 0.5em; }
+      h2 { color: #444; border-bottom: 2px solid #eee; padding-bottom: 0.5em; }
+      .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+      .demo-card { 
+        border: 1px solid #ddd; 
+        border-radius: 8px; 
+        padding: 20px; 
+        text-decoration: none; 
+        color: inherit;
+        transition: box-shadow 0.2s;
+      }
+      .demo-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+      .demo-card h3 { margin-top: 0; color: #0066cc; }
+      .badge { 
+        background: #0066cc; 
+        color: white; 
+        padding: 2px 8px; 
+        border-radius: 12px; 
+        font-size: 12px; 
+        margin-left: 8px;
+      }
+      pre { background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+      .github-link { 
+        display: inline-block; 
+        margin-top: 20px; 
+        color: #0066cc; 
+        text-decoration: none;
+      }
+      .github-link:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h1>🎥 Monaco Recorder</h1>
+    <p>A lightweight library for recording and replaying user interactions in Monaco Editor.</p>
+    
+    <h2>Interactive Demos</h2>
+    <div class="demo-grid">
+      <a href="vanilla.html" class="demo-card">
+        <h3>Vanilla JavaScript <span class="badge">Basic</span></h3>
+        <p>Pure JavaScript implementation showing the core recording and playback functionality. Perfect for understanding the basics.</p>
+      </a>
+      
+      <a href="react.html" class="demo-card">
+        <h3>React Integration <span class="badge">Framework</span></h3>
+        <p>React component example with hooks showing how to integrate monaco-recorder into a React application.</p>
+      </a>
+    </div>
+
+    <h2>Quick Start</h2>
+    <pre><code># Install
+npm install monaco-recorder
+
+# Import and use
+import createMonacoRecorder from 'monaco-recorder';
+
+const recorder = createMonacoRecorder(editor, monaco);
+const stop = recorder.start();
+// ... user interactions ...
+const events = stop();
+recorder.play(events);</code></pre>
+
+    <h2>Features</h2>
+    <ul>
+      <li>🎯 <strong>Zero Build</strong> - Pure ES modules, no build step required</li>
+      <li>📦 <strong>Framework Agnostic</strong> - Works with any JavaScript framework</li>
+      <li>⚡ <strong>Lightweight</strong> - No dependencies beyond Monaco Editor</li>
+      <li>🔧 <strong>TypeScript Support</strong> - Full type definitions included</li>
+      <li>🎛️ <strong>Configurable</strong> - Control recording options and playback speed</li>
+      <li>💾 <strong>Serializable</strong> - Save recordings as JSON</li>
+    </ul>
+
+    <h2>Links</h2>
+    <a href="https://github.com/WinstonFassett/monaco-recorder" class="github-link">
+      📚 View on GitHub
+    </a> |
+    <a href="https://www.npmjs.com/package/monaco-recorder" class="github-link">
+      📦 NPM Package
+    </a> |
+    <a href="https://github.com/WinstonFassett/monaco-recorder#readme" class="github-link">
+      📖 Documentation
+    </a>
+
+    <script>
+      // Add simple analytics/tracking if desired
+      console.log('Monaco Recorder demos loaded');
+    </script>
+  </body>
+</html>

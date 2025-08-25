@@ -1,0 +1,25 @@
+# Development files
+.git/
+.github/
+node_modules/
+*.log
+.DS_Store
+
+# Test files (if added later)
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Documentation (except README.md)
+docs/
+CONTRIBUTING.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db

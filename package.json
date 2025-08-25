@@ -1,0 +1,51 @@
+{
+  "name": "monaco-recorder",
+  "version": "1.0.0",
+  "description": "Record and replay user interactions in Monaco Editor",
+  "main": "monaco-recorder.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./monaco-recorder.js",
+      "types": "./monaco-recorder.d.ts"
+    }
+  },
+  "files": [
+    "monaco-recorder.js",
+    "monaco-recorder.d.ts",
+    "demos/"
+  ],
+  "scripts": {
+    "demo": "npx serve . -p 3000 -s",
+    "test": "echo 'No tests yet' && exit 0"
+  },
+  "keywords": [
+    "monaco",
+    "monaco-editor",
+    "record",
+    "replay",
+    "playback",
+    "session",
+    "typescript",
+    "javascript",
+    "ide",
+    "editor"
+  ],
+  "author": "Winston Fassett <dev@winstonfassett.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WinstonFassett/monaco-recorder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WinstonFassett/monaco-recorder/issues"
+  },
+  "homepage": "https://github.com/WinstonFassett/monaco-recorder#readme",
+  "peerDependencies": {
+    "monaco-editor": "^0.30.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
