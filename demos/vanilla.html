@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monaco Recorder Demo (Vanilla)</title>
+    <style>
+      html, body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+      #toolbar { padding: 8px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; align-items: center; }
+      #editor { position: absolute; top: 48px; bottom: 0; left: 0; right: 0; }
+      label { font-size: 12px; color: #333; }
+      input[type=number] { width: 80px; }
+    </style>
+    <script>
+      // Load Monaco via AMD loader
+      window.addEventListener('DOMContentLoaded', () => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js';
+        script.onload = () => {
+          window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' } });
+          window.require(['vs/editor/editor.main'], () => {
+            window._monacoLoaded = true;
+            initDemo();
+          });
+        };
+        document.head.appendChild(script);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="toolbar">
+      <button id="recordBtn" disabled>⏺ Start Recording</button>
+      <button id="playBtn" disabled>▶ Play</button>
+      <label>Speed % <input id="speed" type="number" value="200" min="10" max="1000" step="10" /></label>
+      <label>Min delay (ms) <input id="minDelay" type="number" value="0" min="0" /></label>
+      <label>Max delay (ms) <input id="maxDelay" type="number" value="1000" min="0" /></label>
+      <span id="status" style="margin-left:auto;color:#666">Idle</span>
+    </div>
+    <div id="editor"></div>
+
+    <script type="module">
+      import { MonacoRecorder } from '../src/monaco-recorder.js';
+
+      let editor = null;
+      let monaco = null;
+      let recorder = null;
+      let recording = [];
+      let recordingActive = false;
+
+      async function initDemo() {
+        // Wait for loader
+        if (!window._monacoLoaded) return;
+        monaco = window.monaco;
+        editor = monaco.editor.create(document.getElementById('editor'), {
+          value: `// Vanilla demo\n// Type and then record & play back.\nfunction hello(name) {\n  console.log('Hello, ' + name)\n}\n`,
+          language: 'javascript',
+          theme: 'vs-dark',
+          automaticLayout: true,
+        });
+
+        recorder = new MonacoRecorder(editor, monaco);
+        wireUI();
+      }
+      window.initDemo = initDemo;
+
+      function $(id) { return document.getElementById(id); }
+
+      function setStatus(text) { $('status').textContent = text; }
+
+      function wireUI() {
+        $('recordBtn').disabled = false;
+
+        $('recordBtn').addEventListener('click', () => {
+          if (!recordingActive) {
+            recorder.start();
+            recordingActive = true;
+            $('recordBtn').textContent = '⏹ Stop Recording';
+            setStatus('Recording...');
+            $('playBtn').disabled = true;
+          } else {
+            recording = recorder.stop();
+            recordingActive = false;
+            $('recordBtn').textContent = '⏺ Start Recording';
+            setStatus(`Recorded ${recording.length} events`);
+            $('playBtn').disabled = recording.length === 0;
+          }
+        });
+
+        $('playBtn').addEventListener('click', () => {
+          if (!recording || !recording.length) return;
+          const speed = clampInt($('speed').value, 10, 1000, 200);
+          const minDelayMs = clampInt($('minDelay').value, 0, 60000, 0);
+          const maxDelayMs = clampInt($('maxDelay').value, 0, 60000, 1000);
+          setStatus('Playing...');
+          recorder.play(recording, {
+            speed,
+            minDelayMs,
+            maxDelayMs,
+            onProgress: (i, total) => setStatus(`Playing ${i}/${total}`),
+            onDone: () => setStatus('Idle'),
+          });
+        });
+      }
+
+      function clampInt(v, min, max, fallback) {
+        const n = (v === '' || v === null || v === undefined) ? NaN : Number(v);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.min(max, Math.max(min, Math.floor(n)));
+      }
+
+      // Expose init for AMD callback
+      window.initDemo = initDemo;
+    </script>
+  </body>
+</html>

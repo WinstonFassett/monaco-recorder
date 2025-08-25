@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monaco Recorder Demo (React)</title>
+    <style>
+      html, body, #root { height: 100%; margin: 0; }
+      .toolbar { padding: 8px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; align-items: center; }
+      .editor { position: absolute; top: 48px; bottom: 0; left: 0; right: 0; }
+      label { font-size: 12px; color: #333; }
+      input[type=number] { width: 80px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@19.1.1/es2022/react.mjs",
+          "react-dom": "https://esm.sh/react-dom@19.1.1/es2022/react-dom.mjs",
+          "react-dom/client": "https://esm.sh/react-dom@19.1.1/es2022/client.mjs"
+        }
+      }
+    </script>
+    <script>
+      // Load Monaco via AMD loader before the module script mounts React
+      window.addEventListener('DOMContentLoaded', () => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js';
+        script.onload = () => {
+          window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' } });
+          window.require(['vs/editor/editor.main'], () => {
+            window._monacoLoaded = true;
+            // React app will check this flag
+            window.dispatchEvent(new Event('monaco-ready'));
+          });
+        };
+        document.head.appendChild(script);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="module">
+      import React, { useEffect, useRef, useState } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { MonacoRecorder } from '../src/monaco-recorder.js';
+
+      function App() {
+        const containerRef = useRef(null);
+        const editorRef = useRef(null);
+        const recorderRef = useRef(null);
+        const [ready, setReady] = useState(false);
+        const [recordingActive, setRecordingActive] = useState(false);
+        const [recording, setRecording] = useState([]);
+        const [speed, setSpeed] = useState(200);
+        const [minDelay, setMinDelay] = useState(0);
+        const [maxDelay, setMaxDelay] = useState(1000);
+        const [status, setStatus] = useState('Idle');
+
+        useEffect(() => {
+          function mountEditor() {
+            if (!window._monacoLoaded || !containerRef.current) return;
+            const monaco = window.monaco;
+            const editor = monaco.editor.create(containerRef.current, {
+              value: `// React demo\n// Type and then record & play back.\nconst add = (a,b)=>a+b`,
+              language: 'javascript',
+              theme: 'vs-dark',
+              automaticLayout: true,
+            });
+            editorRef.current = editor;
+            recorderRef.current = new MonacoRecorder(editor, monaco);
+            setReady(true);
+          }
+
+          if (window._monacoLoaded) mountEditor();
+          else {
+            const onReady = () => mountEditor();
+            window.addEventListener('monaco-ready', onReady, { once: true });
+            return () => window.removeEventListener('monaco-ready', onReady);
+          }
+        }, []);
+
+        const toggleRecord = () => {
+          const recorder = recorderRef.current;
+          if (!recorder) return;
+          if (!recordingActive) {
+            recorder.start();
+            setRecordingActive(true);
+            setStatus('Recording...');
+          } else {
+            const events = recorder.stop();
+            setRecording(events);
+            setRecordingActive(false);
+            setStatus(`Recorded ${events.length} events`);
+          }
+        };
+
+        const play = () => {
+          const recorder = recorderRef.current;
+          if (!recorder || recording.length === 0) return;
+          setStatus('Playing...');
+          recorder.play(recording, {
+            speed: clampInt(speed, 10, 1000, 200),
+            minDelayMs: clampInt(minDelay, 0, 60000, 0),
+            maxDelayMs: clampInt(maxDelay, 0, 60000, 1000),
+            onProgress: (i, total) => setStatus(`Playing ${i}/${total}`),
+            onDone: () => setStatus('Idle'),
+          });
+        };
+
+        return (
+          <div style={{ height: '100%', position: 'relative' }}>
+            <div className="toolbar">
+              <button onClick={toggleRecord} disabled={!ready}>
+                {recordingActive ? '⏹ Stop Recording' : '⏺ Start Recording'}
+              </button>
+              <button onClick={play} disabled={!ready || recording.length === 0}>▶ Play</button>
+              <label>Speed % <input type="number" value={speed} min={10} max={1000} step={10} onChange={(e)=>setSpeed(Number(e.target.value)||0)} /></label>
+              <label>Min delay <input type="number" value={minDelay} min={0} onChange={(e)=>setMinDelay(Number(e.target.value)||0)} /></label>
+              <label>Max delay <input type="number" value={maxDelay} min={0} onChange={(e)=>setMaxDelay(Number(e.target.value)||0)} /></label>
+              <span style={{ marginLeft: 'auto', color: '#666' }}>{status}</span>
+            </div>
+            <div ref={containerRef} className="editor" />
+          </div>
+        );
+      }
+
+      function clampInt(v, min, max, fallback) {
+        const n = (v === '' || v === null || v === undefined) ? NaN : Number(v);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.min(max, Math.max(min, Math.floor(n)));
+      }
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
