@@ -39,7 +39,7 @@
     <div id="editor"></div>
 
     <script type="module">
-      import { MonacoRecorder } from '../src/monaco-recorder.js';
+      import { createMonacoRecorder } from '../src/monaco-recorder.js';
 
       let editor = null;
       let monaco = null;
@@ -58,7 +58,7 @@
           automaticLayout: true,
         });
 
-        recorder = new MonacoRecorder(editor, monaco);
+        recorder = createMonacoRecorder(editor, monaco);
         wireUI();
       }
       window.initDemo = initDemo;

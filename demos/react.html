@@ -43,7 +43,7 @@
     <script type="module">
       import React, { useEffect, useRef, useState } from 'react';
       import { createRoot } from 'react-dom/client';
-      import { MonacoRecorder } from '../src/monaco-recorder.js';
+      import { createMonacoRecorder } from '../src/monaco-recorder.js';
 
       function App() {
         const containerRef = useRef(null);
@@ -62,13 +62,13 @@
             if (!window._monacoLoaded || !containerRef.current) return;
             const monaco = window.monaco;
             const editor = monaco.editor.create(containerRef.current, {
-              value: `// React demo\n// Type and then record & play back.\nconst add = (a,b)=>a+b`,
+              value: "// React demo\n// Type and then record & play back.\nconst add = (a,b)=>a+b",
               language: 'javascript',
               theme: 'vs-dark',
               automaticLayout: true,
             });
             editorRef.current = editor;
-            recorderRef.current = new MonacoRecorder(editor, monaco);
+            recorderRef.current = createMonacoRecorder(editor, monaco);
             setReady(true);
           }
 
@@ -108,20 +108,20 @@
           });
         };
 
-        return (
-          <div style={{ height: '100%', position: 'relative' }}>
-            <div className="toolbar">
-              <button onClick={toggleRecord} disabled={!ready}>
-                {recordingActive ? '⏹ Stop Recording' : '⏺ Start Recording'}
-              </button>
-              <button onClick={play} disabled={!ready || recording.length === 0}>▶ Play</button>
-              <label>Speed % <input type="number" value={speed} min={10} max={1000} step={10} onChange={(e)=>setSpeed(Number(e.target.value)||0)} /></label>
-              <label>Min delay <input type="number" value={minDelay} min={0} onChange={(e)=>setMinDelay(Number(e.target.value)||0)} /></label>
-              <label>Max delay <input type="number" value={maxDelay} min={0} onChange={(e)=>setMaxDelay(Number(e.target.value)||0)} /></label>
-              <span style={{ marginLeft: 'auto', color: '#666' }}>{status}</span>
-            </div>
-            <div ref={containerRef} className="editor" />
-          </div>
+        return React.createElement(
+          'div',
+          { style: { height: '100%', position: 'relative' } },
+          React.createElement(
+            'div',
+            { className: 'toolbar' },
+            React.createElement('button', { onClick: toggleRecord, disabled: !ready }, recordingActive ? '⏹ Stop Recording' : '⏺ Start Recording'),
+            React.createElement('button', { onClick: play, disabled: !ready || recording.length === 0 }, '▶ Play'),
+            React.createElement('label', null, 'Speed % ', React.createElement('input', { type: 'number', value: speed, min: 10, max: 1000, step: 10, onChange: (e)=>setSpeed(Number(e.target.value)||0) })),
+            React.createElement('label', null, 'Min delay ', React.createElement('input', { type: 'number', value: minDelay, min: 0, onChange: (e)=>setMinDelay(Number(e.target.value)||0) })),
+            React.createElement('label', null, 'Max delay ', React.createElement('input', { type: 'number', value: maxDelay, min: 0, onChange: (e)=>setMaxDelay(Number(e.target.value)||0) })),
+            React.createElement('span', { style: { marginLeft: 'auto', color: '#666' } }, status)
+          ),
+          React.createElement('div', { ref: containerRef, className: 'editor' })
         );
       }
 
@@ -132,7 +132,7 @@
       }
 
       const root = createRoot(document.getElementById('root'));
-      root.render(<App />);
+      root.render(React.createElement(App));
     </script>
   </body>
 </html>
