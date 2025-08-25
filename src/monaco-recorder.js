@@ -1,3 +1,32 @@
+  // Try to (re)patch suggest list focus whenever the widget becomes available
+  function ensureSuggestListPatched() {
+    try {
+      const { ctrl, widget, list } = getSuggestParts();
+      if (!ctrl || !widget || !list) return;
+      // Patch focus to record which item is focused
+      if (!originalListSetFocus && list.setFocus) {
+        const orig = list.setFocus.bind(list);
+        originalListSetFocus = orig;
+        list.setFocus = function(indexes) {
+          const idx = Array.isArray(indexes) ? indexes[0] : -1;
+          const it = list._items?.[idx];
+          if (it?.suggestion) {
+            stamp({
+              type: 'suggestFocus',
+              index: idx,
+              item: {
+                label: it.suggestion.label,
+                kind: it.suggestion.kind,
+                insertText: it.suggestion.insertText,
+              },
+            });
+          }
+          return orig(indexes);
+        };
+        try { console.log('[HOOK] Patched suggest list.setFocus'); } catch {}
+      }
+    } catch {}
+  }
 // Monaco Recorder/Playback (framework-agnostic, ES module)
 // API:
 //   import createMonacoRecorder from './src/monaco-recorder.js'
@@ -29,17 +58,26 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   const keyboardBuffer = [];
 
   // Suggest hook originals to restore
-  let originalListSetFocus = null;
-  let originalAcceptSelected = null;
   let patchedSuggestController = null;
+  let originalAcceptSelected = null;
+  let originalListSetFocus = null;
 
   // --- Playback state ---
   let playing = false;
+  let lastFocusedLabel = null;
+  let lastFocusedIndex = null;
   const timers = new Set();
 
   // --- Utility ---
   function now() { return Date.now(); }
-  function stamp(ev) { events.push({ ...ev, timestamp: now() - startTs }); }
+  function stamp(ev) {
+  const e = { ...ev, timestamp: now() - startTs };
+  events.push(e);
+  try {
+    const tag = e.item?.label || e.key || e.triggerKey || e.method || '';
+    console.log('[REC]', e.type, tag, e);
+  } catch {}
+}
 
   // --- Recording: helpers ---
   function getSuggestParts() {
@@ -53,10 +91,64 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     }
   }
 
+  // --- Playback helpers (parity with index.html) ---
+  async function simulateNavigationKey(keyEvent) {
+    const key = keyEvent?.key;
+    try { editor?.focus?.(); } catch {}
+    // Issue Monaco commands first
+    try {
+      if (key === 'ArrowDown') {
+        editor?.trigger('keyboard', 'selectNextSuggestion', {});
+      } else if (key === 'ArrowUp') {
+        editor?.trigger('keyboard', 'selectPrevSuggestion', {});
+      }
+      await sleep(0);
+    } catch {}
+
+    // Local readiness wait (parity with index.html ensureSuggestReady)
+    let widget, list;
+    const ready = () => {
+      const parts = getSuggestParts();
+      widget = parts.widget; list = parts.list;
+      return !!(widget?.isVisible?.() && (list?._items?.length > 0));
+    };
+    if (!ready()) {
+      const start = Date.now();
+      const timeout = 300; // soft-ready
+      while (!ready() && Date.now() - start < timeout) {
+        await sleep(8);
+      }
+      if (!ready()) { try { console.warn('[PLAY:NAV] skipped: suggest not ready'); } catch {} return; }
+    }
+
+    const itemsLen = list._items?.length || 0;
+    if (itemsLen === 0) { try { console.warn('[PLAY:NAV] skipped: no items'); } catch {} return; }
+
+    try { list.domFocus?.(); } catch {}
+    const before = (list.getFocus?.() || [])[0] ?? -1;
+    try { console.log('[PLAY:NAV] before', { before, itemsLen }); } catch {}
+
+    if (key === 'ArrowDown') {
+      const seed = before < 0 ? 0 : before;
+      const newIndex = Math.min(seed + 1, itemsLen - 1);
+      list.setFocus([newIndex]);
+      list.reveal?.(newIndex);
+      try { console.log('[PLAY:NAV] after', { after: newIndex }); } catch {}
+    } else if (key === 'ArrowUp') {
+      const current = before < 0 ? 0 : before;
+      const newIndex = Math.max(current - 1, 0);
+      list.setFocus([newIndex]);
+      list.reveal?.(newIndex);
+      try { console.log('[PLAY:NAV] after', { after: newIndex }); } catch {}
+    }
+  }
+
   function startSuggestPolling() {
     if (!opts.captureSuggest) return;
     lastSuggestVisible = false;
     suggestPoll = setInterval(() => {
+      // Opportunistically patch list focus when widget appears
+      ensureSuggestListPatched();
       const { widget, list } = getSuggestParts();
       const visible = !!(widget?.isVisible?.() && (list?._items?.length || 0) > 0);
       const state = widget?._state || 0;
@@ -131,7 +223,11 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
         widgetEl = container.querySelector?.('.editor-widget.suggest-widget[widgetid="editor.widget.suggestWidget"]') ||
                    container.querySelector?.('.editor-widget.suggest-widget') ||
                    document.querySelector('.editor-widget.suggest-widget');
-        if (widgetEl) watchWidgetAttributes();
+        if (widgetEl) {
+          // Ensure our suggest list patch is applied as soon as the widget is present
+          ensureSuggestListPatched();
+          watchWidgetAttributes();
+        }
       };
 
       const treeObserver = new MutationObserver((mutations) => {
@@ -238,11 +334,18 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
           keyboardBuffer.push({ key: e.key, code: e.code });
           if (keyboardBuffer.length > 20) keyboardBuffer.shift();
         } catch {}
-        // Stamp navigation/modifier keys for context
+        // Stamp navigation/modifier keys for context (always when suggest capture is enabled)
         const nav = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End','Tab','Enter','Escape'];
         const isModifier = ['Control','Shift','Alt','Meta'].includes(e.key);
-        if (opts.captureKeys && (nav.includes(e.key) || isModifier || e.ctrlKey || e.altKey || e.metaKey)) {
-          stamp({ type: 'keyDown', key: e.key, code: e.code, ctrlKey: !!e.ctrlKey, altKey: !!e.altKey, metaKey: !!e.metaKey, shiftKey: !!e.shiftKey });
+        if (opts.captureKeys || opts.captureSuggest) {
+          if (nav.includes(e.key) || isModifier || e.ctrlKey || e.altKey || e.metaKey) {
+            const base = { type: 'keyDown', key: e.key, code: e.code, ctrlKey: !!e.ctrlKey, altKey: !!e.altKey, metaKey: !!e.metaKey, shiftKey: !!e.shiftKey };
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              stamp({ ...base, category: 'navigation' });
+            } else {
+              stamp(base);
+            }
+          }
         }
 
         if (!opts.captureSuggest) return;
@@ -487,8 +590,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     // Session flags for suggest
     let suggestSessionActive = false;
     let desiredSuggestOpen = false;
-    let lastFocusedLabel = null;
-    let lastFocusedIndex = null;
 
     const initial = list.find((e) => e.type === 'initialState');
     if (initial) applyInitial(initial);
@@ -503,7 +604,15 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
         const waitMs = scaleDelay(Math.max(0, ev.timestamp - prevTs));
         if (waitMs) await sleep(waitMs);
 
-        // Handle suggest state machine first for certain events
+        // If the previous event opened suggestions, ensure widget is ready before executing this one
+        const prev = list[i - 1];
+        if (prev && (prev.type === 'suggestShow' || prev.type === 'suggestTriggered' || prev.type === 'suggestInferredOpen')) {
+          await waitForSuggestWidget(true);
+        }
+        try {
+          const tag = ev.item?.label || ev.key || ev.direction || ev.method || '';
+          console.log('[PLAY]', ev.type, tag, ev);
+        } catch {}
         switch (ev.type) {
           case 'initialState': {
             // Already applied once before loop; do not re-apply to avoid cursor jumps
@@ -528,11 +637,11 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
             break;
           }
           case 'suggestNavigate': {
-            await waitForSuggestWidget(true);
-            await simulateNavigate(ev.direction);
+            // Navigation is driven by recorded keyDown ArrowUp/Down like index.html; ignore this if present
             break;
           }
           case 'suggestFocus': {
+            // Update last known focus from recording
             lastFocusedLabel = ev.item?.label ?? null;
             lastFocusedIndex = Number.isInteger(ev.index) ? ev.index : null;
             break;
@@ -555,21 +664,31 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
               suggestSessionActive = true;
               desiredSuggestOpen = true;
               await waitForSuggestWidget(true);
-              // Optionally try restore focus roughly by label/index
-              if (lastFocusedLabel != null || Number.isInteger(lastFocusedIndex)) {
-                try {
-                  const { list } = getSuggestParts();
-                  const items = list?._items || [];
-                  let targetIndex = -1;
-                  if (lastFocusedLabel != null) targetIndex = items.findIndex(it => it?.suggestion?.label === lastFocusedLabel);
-                  if (targetIndex < 0 && Number.isInteger(lastFocusedIndex)) targetIndex = lastFocusedIndex;
-                  const current = (list.getFocus?.() || [])[0] ?? -1;
-                  let steps = targetIndex - current;
-                  const dir = steps >= 0 ? 'down' : 'up';
-                  steps = Math.abs(steps);
-                  for (let s = 0; s < steps; s++) await simulateNavigate(dir);
-                } catch {}
-              }
+              // Restore focus by label or fallback to index
+              try {
+                const { list } = getSuggestParts();
+                if (list) {
+                  const items = list._items || [];
+                  let idx = -1;
+                  if (lastFocusedLabel) {
+                    idx = items.findIndex(it => it?.suggestion?.label === lastFocusedLabel);
+                  }
+                  if (idx < 0 && Number.isInteger(lastFocusedIndex)) {
+                    idx = Math.max(0, Math.min(lastFocusedIndex, Math.max(0, items.length - 1)));
+                  }
+                  if (idx >= 0) {
+                    try { list.domFocus?.(); } catch {}
+                    list.setFocus([idx]);
+                    list.reveal?.(idx);
+                  }
+                }
+              } catch {}
+            }
+            // Drive suggest navigation whenever ArrowUp/Down occurs; simulateNavigationKey no-ops if suggest isn't ready
+            if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+              try { console.log('[PLAY:NAV]', ev.key); } catch {}
+              await simulateNavigationKey(ev);
+              break;
             }
             break;
           }

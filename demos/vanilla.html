@@ -59,6 +59,8 @@
         });
 
         recorder = createMonacoRecorder(editor, monaco);
+        // Expose for quick debugging/inspection
+        window.recorder = recorder;
         wireUI();
       }
       window.initDemo = initDemo;
