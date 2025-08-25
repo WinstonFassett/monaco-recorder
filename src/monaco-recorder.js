@@ -78,6 +78,8 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     console.log('[REC]', e.type, tag, e);
   } catch {}
 }
+  // Small sleep utility available to helpers (e.g., simulateNavigationKey)
+  function sleep(ms) { return ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve(); }
 
   // --- Recording: helpers ---
   function getSuggestParts() {
@@ -95,52 +97,51 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   async function simulateNavigationKey(keyEvent) {
     const key = keyEvent?.key;
     try { editor?.focus?.(); } catch {}
-    // Issue Monaco commands first
+
+    // Issue Monaco commands first without gating
     try {
       if (key === 'ArrowDown') {
-        editor?.trigger('keyboard', 'selectNextSuggestion', {});
+        editor?.trigger('playback', 'selectNextSuggestion', {});
       } else if (key === 'ArrowUp') {
-        editor?.trigger('keyboard', 'selectPrevSuggestion', {});
+        editor?.trigger('playback', 'selectPrevSuggestion', {});
       }
       await sleep(0);
     } catch {}
 
-    // Local readiness wait (parity with index.html ensureSuggestReady)
+    // Ensure widget is actually ready before list manipulation
     let widget, list;
-    const ready = () => {
-      const parts = getSuggestParts();
-      widget = parts.widget; list = parts.list;
-      return !!(widget?.isVisible?.() && (list?._items?.length > 0));
-    };
+    const parts = getSuggestParts();
+    widget = parts.widget; list = parts.list;
+    // Soft readiness wait similar to index.html ensureSuggestReady(true)
+    const ready = () => !!(widget?.isVisible?.() && (list?._items?.length > 0));
     if (!ready()) {
       const start = Date.now();
-      const timeout = 300; // soft-ready
+      const timeout = 120;
       while (!ready() && Date.now() - start < timeout) {
         await sleep(8);
       }
-      if (!ready()) { try { console.warn('[PLAY:NAV] skipped: suggest not ready'); } catch {} return; }
+      if (!ready()) return;
     }
 
     const itemsLen = list._items?.length || 0;
-    if (itemsLen === 0) { try { console.warn('[PLAY:NAV] skipped: no items'); } catch {} return; }
+    if (itemsLen === 0) return;
 
     try { list.domFocus?.(); } catch {}
     const before = (list.getFocus?.() || [])[0] ?? -1;
-    try { console.log('[PLAY:NAV] before', { before, itemsLen }); } catch {}
-
+    let after = before;
     if (key === 'ArrowDown') {
-      const seed = before < 0 ? 0 : before;
-      const newIndex = Math.min(seed + 1, itemsLen - 1);
+      const newIndex = Math.min(((before || 0) + 1), itemsLen - 1);
       list.setFocus([newIndex]);
       list.reveal?.(newIndex);
-      try { console.log('[PLAY:NAV] after', { after: newIndex }); } catch {}
+      after = newIndex;
     } else if (key === 'ArrowUp') {
       const current = before < 0 ? 0 : before;
       const newIndex = Math.max(current - 1, 0);
       list.setFocus([newIndex]);
       list.reveal?.(newIndex);
-      try { console.log('[PLAY:NAV] after', { after: newIndex }); } catch {}
+      after = newIndex;
     }
+    try { console.log('[PLAY:NAV]', { before, after }); } catch {}
   }
 
   function startSuggestPolling() {
@@ -618,6 +619,24 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
             // Already applied once before loop; do not re-apply to avoid cursor jumps
             break;
           }
+          case 'keyDown': {
+            // Drive suggest navigation and basic control keys (parity with index.html)
+            if (ev.key === 'Enter' && suggestSessionActive) {
+              // Skip Enter during suggest session to avoid newline
+              break;
+            }
+            if (ev.key === 'Escape' && suggestSessionActive) {
+              const ctrl = editor.getContribution('editor.contrib.suggestController');
+              try { ctrl?.cancelSuggestWidget?.(); } catch {}
+              suggestSessionActive = false;
+              desiredSuggestOpen = false;
+              break;
+            }
+            if (ev.category === 'navigation') {
+              await simulateNavigationKey(ev);
+            }
+            break;
+          }
           case 'suggestHide':
           case 'suggestInferredClose': {
             try { editor.focus?.(); } catch {}
@@ -641,7 +660,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
             break;
           }
           case 'suggestFocus': {
-            // Update last known focus from recording
+            // Update last known focus from recording (used to restore after re-open)
             lastFocusedLabel = ev.item?.label ?? null;
             lastFocusedIndex = Number.isInteger(ev.index) ? ev.index : null;
             break;
@@ -683,12 +702,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
                   }
                 }
               } catch {}
-            }
-            // Drive suggest navigation whenever ArrowUp/Down occurs; simulateNavigationKey no-ops if suggest isn't ready
-            if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
-              try { console.log('[PLAY:NAV]', ev.key); } catch {}
-              await simulateNavigationKey(ev);
-              break;
             }
             break;
           }
