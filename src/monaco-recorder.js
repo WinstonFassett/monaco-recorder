@@ -30,7 +30,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   let startTs = 0;
   let events = [];
   let inputCleanup = null;
-  let suggestPoll = null;
   let lastSuggestVisible = false;
   let lastSuggestState = 0;
   let suggestDetectionCleanup = null;
@@ -64,7 +63,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   const SOFT_SUGGEST_TIMEOUT_MS = 120;
   const HARD_SUGGEST_TIMEOUT_MS = 300;
   const SUGGEST_POLL_MS = 8;
-  const POLLING_INTERVAL_MS = 50;
+  
 
   // --- Recording: helpers ---
   function getSuggestParts() {
@@ -93,37 +92,9 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       }
       await sleep(0);
     } catch {}
-
-    try { console.log('[PLAY:NAV]', { before, after }); } catch {}
   }
 
-  // NOTE: Polling is currently disabled. Attribute + tree observers are our primary detection.
-  function startSuggestPolling() {
-    if (!opts.captureSuggest) return;
-    lastSuggestVisible = false;
-    suggestPoll = setInterval(() => {
-      // Opportunistically patch list focus when widget appears
-      ensureSuggestListPatched();
-      const { widget, list } = getSuggestParts();
-      const visible = !!(widget?.isVisible?.() && (list?._items?.length || 0) > 0);
-      const state = widget?._state || 0;
-      if (state !== lastSuggestState) {
-        // Opening heuristic
-        if (state >= 2 && visible && lastSuggestState < 2) {
-          stamp({ type: 'suggestInferredOpen', method: 'polling', state, recentKeys: keyboardBuffer.slice(-3) });
-        }
-        // Closing heuristic
-        if (state === 0 && !visible && lastSuggestState === 2) {
-          stamp({ type: 'suggestHide', method: 'polling', state });
-        }
-        lastSuggestState = state;
-      }
-      if (visible !== lastSuggestVisible) {
-        lastSuggestVisible = visible;
-        stamp({ type: visible ? 'suggestShow' : 'suggestHide', method: 'poll' });
-      }
-    }, POLLING_INTERVAL_MS);
-  }
+  // Polling removed; attribute observer is primary detection.
 
   function setupSuggestionMenuDetection() {
     if (!opts.captureSuggest) return () => {};
@@ -399,7 +370,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       try { disposers.pop()?.dispose?.(); } catch {}
     }
     if (inputCleanup) { try { inputCleanup(); } catch {} inputCleanup = null; }
-    if (suggestPoll) { clearInterval(suggestPoll); suggestPoll = null; }
     if (suggestDetectionCleanup) { try { suggestDetectionCleanup(); } catch {} suggestDetectionCleanup = null; }
 
     // Restore suggest patches
