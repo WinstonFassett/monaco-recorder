@@ -16,7 +16,7 @@
     "demos/"
   ],
   "scripts": {
-    "demo": "npx serve . -p 3000 -s",
+    "start": "npx serve . -p 3000",
     "test": "echo 'No tests yet' && exit 0"
   },
   "keywords": [
