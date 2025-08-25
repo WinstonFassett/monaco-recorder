@@ -129,6 +129,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     try { console.log('[PLAY:NAV]', { before, after }); } catch {}
   }
 
+  // NOTE: Polling is currently disabled. Attribute + tree observers are our primary detection.
   function startSuggestPolling() {
     if (!opts.captureSuggest) return;
     lastSuggestVisible = false;
@@ -303,6 +304,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
         const isModifier = ['Control','Shift','Alt','Meta'].includes(e.key);
         if (opts.captureKeys || opts.captureSuggest) {
           if (nav.includes(e.key) || isModifier || e.ctrlKey || e.altKey || e.metaKey) {
+            // DIAGNOSTIC-ONLY: generic keyDown stamps for visibility; safe to delete once stable
             const base = { type: 'keyDown', key: e.key, code: e.code, ctrlKey: !!e.ctrlKey, altKey: !!e.altKey, metaKey: !!e.metaKey, shiftKey: !!e.shiftKey };
             if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
               stamp({ ...base, category: 'navigation' });
@@ -320,6 +322,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
           setTimeout(() => {
             const { widget, list } = getSuggestParts();
             if (widget?.isVisible?.() && (list?._items?.length || 0) > 0) {
+              // DIAGNOSTIC-ONLY: suggestion likely opened due to keyboard; safe to delete
               stamp({ type: 'suggestTriggered', method: 'keyboard-trigger', triggerKey: ctrlSpace ? 'Ctrl+Space' : '.', recentKeys: keyboardBuffer.slice(-3) });
             }
           }, 40);
@@ -333,9 +336,11 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
           const items = list._items || [];
           const labelAt = (i) => (items[i]?.suggestion?.label ?? null);
           if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            // DIAGNOSTIC-ONLY: navigation intent; playback uses recorded keyDown category
             stamp({ type: 'suggestNavigate', direction: e.key === 'ArrowDown' ? 'down' : 'up', fromIndex: focusIdx, fromLabel: labelAt(focusIdx) });
           } else if (e.key === 'Enter') {
             // acceptance intent (actual accept recorded by wrapped method)
+            // DIAGNOSTIC-ONLY: acceptance intent; playback relies on contentChange
             stamp({ type: 'suggestAcceptIntent', index: focusIdx, label: labelAt(focusIdx) });
           } else if (e.key === 'Escape') {
             stamp({ type: 'suggestHide', method: 'esc' });
@@ -414,7 +419,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     }
 
     attachKeyCapture();
-    startSuggestPolling();
+    // Polling intentionally disabled; rely on DOM attribute + tree observers
     setupSuggestHooks();
     suggestDetectionCleanup = setupSuggestionMenuDetection();
 
