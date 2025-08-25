@@ -83,7 +83,8 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     const key = keyEvent?.key;
     try { editor?.focus?.(); } catch {}
 
-    // Issue Monaco commands first without gating
+    // While suggestion menu is open, playback 
+    // arrow keys as selection commands
     try {
       if (key === 'ArrowDown') {
         editor?.trigger('playback', 'selectNextSuggestion', {});
@@ -93,39 +94,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       await sleep(0);
     } catch {}
 
-    // Ensure widget is actually ready before list manipulation
-    let widget, list;
-    const parts = getSuggestParts();
-    widget = parts.widget; list = parts.list;
-    // Soft readiness wait similar to index.html ensureSuggestReady(true)
-    const ready = () => !!(widget?.isVisible?.() && (list?._items?.length > 0));
-    if (!ready()) {
-      const start = Date.now();
-      const timeout = SOFT_SUGGEST_TIMEOUT_MS;
-      while (!ready() && Date.now() - start < timeout) {
-        await sleep(SUGGEST_POLL_MS);
-      }
-      if (!ready()) return;
-    }
-
-    const itemsLen = list._items?.length || 0;
-    if (itemsLen === 0) return;
-
-    try { list.domFocus?.(); } catch {}
-    const before = (list.getFocus?.() || [])[0] ?? -1;
-    let after = before;
-    if (key === 'ArrowDown') {
-      const newIndex = Math.min(((before || 0) + 1), itemsLen - 1);
-      list.setFocus([newIndex]);
-      list.reveal?.(newIndex);
-      after = newIndex;
-    } else if (key === 'ArrowUp') {
-      const current = before < 0 ? 0 : before;
-      const newIndex = Math.max(current - 1, 0);
-      list.setFocus([newIndex]);
-      list.reveal?.(newIndex);
-      after = newIndex;
-    }
     try { console.log('[PLAY:NAV]', { before, after }); } catch {}
   }
 
