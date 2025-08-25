@@ -263,13 +263,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     });
     disposers.push(d1);
 
-    // Cursor position
-    if (opts.captureCursor) {
-      const d2 = editor.onDidChangeCursorPosition((e) => {
-        stamp({ type: 'cursorPosition', position: { lineNumber: e.position.lineNumber, column: e.position.column } });
-      });
-      disposers.push(d2);
-    }
 
     // Selection
     if (opts.captureSelection) {
