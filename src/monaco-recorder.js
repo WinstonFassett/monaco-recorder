@@ -19,7 +19,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 
   const opts = {
     captureCursor: true,
-    captureSelection: false,
+    captureSelection: true,
     captureKeys: false,
     captureSuggest: true,
     ...options,
