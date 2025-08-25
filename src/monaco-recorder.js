@@ -66,7 +66,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   let playing = false;
   let lastFocusedLabel = null;
   let lastFocusedIndex = null;
-  const timers = new Set();
+  // (removed) timers set was unused; we rely on async sleeps only
 
   // --- Utility ---
   function now() { return Date.now(); }
@@ -487,8 +487,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 
   function stopPlayback() {
     playing = false;
-    for (const t of timers) clearTimeout(t);
-    timers.clear();
   }
 
   function applyInitial(initial) {
@@ -554,7 +552,6 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       onDone = null,
     } = playOpts;
 
-    const sleep = (ms) => ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve();
     const scaleDelay = (ms) => {
       const scaled = ms * (100 / Math.max(1, speed));
       return Math.min(Math.max(scaled, minDelayMs), maxDelayMs);
@@ -578,13 +575,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       return await waitFor(ready, soft ? 120 : 300, 8);
     };
 
-    const simulateNavigate = async (direction) => {
-      try {
-        const cmd = direction === 'down' ? 'selectNextSuggestion' : 'selectPrevSuggestion';
-        editor.trigger('playback', cmd, {});
-        await sleep(0);
-      } catch {}
-    };
+    // (removed) simulateNavigate helper was unused; navigation goes through simulateNavigationKey
 
     playing = true;
 
