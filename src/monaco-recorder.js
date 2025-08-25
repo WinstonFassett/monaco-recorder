@@ -8,11 +8,19 @@
   }
 // Monaco Recorder/Playback (framework-agnostic, ES module)
 // API:
-//   import createMonacoRecorder from './src/monaco-recorder.js'
-//   const rec = createMonacoRecorder(editor, monaco, { captureSelection: false, captureKeys: false })
-//   const stop = rec.start()
-//   const events = stop()
+//   import createMonacoRecorder, { createRecorder, createPlayback, serializeEvents, deserializeEvents } from './src/monaco-recorder.js'
+//   // 1) Back-compat combined factory
+//   const rec = createMonacoRecorder(editor, monaco, { captureSelection: true, captureKeys: false })
+//   const stop = rec.start(); const events = stop();
 //   rec.play(events, { speed: 200, minDelayMs: 0, maxDelayMs: 1000, onProgress, onDone })
+//   // 2) Separate factories sharing the same event format
+//   const recorder = createRecorder(editor, monaco, { captureSelection: true })
+//   const playback = createPlayback(editor, monaco)
+//   const stopRec = recorder.start(); const recording = stopRec();
+//   // serialize to persist/transmit
+//   const json = serializeEvents(recording)
+//   const loaded = deserializeEvents(json)
+//   playback.play(loaded)
 
 export function createMonacoRecorder(editor, monaco, options = {}) {
   if (!editor || !monaco) throw new Error('createMonacoRecorder requires editor and monaco');
@@ -520,3 +528,40 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
 }
 
 export default createMonacoRecorder;
+
+// Named helpers: separate recording and playback facades sharing the same event format
+export function createRecorder(editor, monaco, options = {}) {
+  const api = createMonacoRecorder(editor, monaco, options);
+  return {
+    start: api.start,
+    stop: api.stop,
+    getEvents: api.getEvents,
+  };
+}
+
+export function createPlayback(editor, monaco, options = {}) {
+  const api = createMonacoRecorder(editor, monaco, options);
+  return {
+    play: api.play,
+    stopPlayback: api.stopPlayback,
+  };
+}
+
+// Pure helpers: JSON serialization for decoupling event stream from editor state
+export function serializeEvents(evts) {
+  try {
+    const events = Array.isArray(evts) ? evts : [];
+    return JSON.stringify({ v: 1, events }, null, 2);
+  } catch {
+    return '[]';
+  }
+}
+
+export function deserializeEvents(json) {
+  try {
+    const obj = JSON.parse(json);
+    if (Array.isArray(obj)) return obj;
+    if (obj && Array.isArray(obj.events)) return obj.events;
+    return [];
+  } catch { return []; }
+}
