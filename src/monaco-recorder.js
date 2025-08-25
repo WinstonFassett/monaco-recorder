@@ -1,30 +1,9 @@
   // Try to (re)patch suggest list focus whenever the widget becomes available
   function ensureSuggestListPatched() {
     try {
-      const { ctrl, widget, list } = getSuggestParts();
-      if (!ctrl || !widget || !list) return;
-      // Patch focus to record which item is focused
-      if (!originalListSetFocus && list.setFocus) {
-        const orig = list.setFocus.bind(list);
-        originalListSetFocus = orig;
-        list.setFocus = function(indexes) {
-          const idx = Array.isArray(indexes) ? indexes[0] : -1;
-          const it = list._items?.[idx];
-          if (it?.suggestion) {
-            stamp({
-              type: 'suggestFocus',
-              index: idx,
-              item: {
-                label: it.suggestion.label,
-                kind: it.suggestion.kind,
-                insertText: it.suggestion.insertText,
-              },
-            });
-          }
-          return orig(indexes);
-        };
-        try { console.log('[HOOK] Patched suggest list.setFocus'); } catch {}
-      }
+      const { list } = getSuggestParts();
+      if (!list) return;
+      patchSuggestListFocusIfNeeded(list);
     } catch {}
   }
 // Monaco Recorder/Playback (framework-agnostic, ES module)
@@ -81,6 +60,12 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
   // Small sleep utility available to helpers (e.g., simulateNavigationKey)
   function sleep(ms) { return ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve(); }
 
+  // --- Suggest timing constants (keep parity with index.html values) ---
+  const SOFT_SUGGEST_TIMEOUT_MS = 120;
+  const HARD_SUGGEST_TIMEOUT_MS = 300;
+  const SUGGEST_POLL_MS = 8;
+  const POLLING_INTERVAL_MS = 50;
+
   // --- Recording: helpers ---
   function getSuggestParts() {
     try {
@@ -116,9 +101,9 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     const ready = () => !!(widget?.isVisible?.() && (list?._items?.length > 0));
     if (!ready()) {
       const start = Date.now();
-      const timeout = 120;
+      const timeout = SOFT_SUGGEST_TIMEOUT_MS;
       while (!ready() && Date.now() - start < timeout) {
-        await sleep(8);
+        await sleep(SUGGEST_POLL_MS);
       }
       if (!ready()) return;
     }
@@ -168,7 +153,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
         lastSuggestVisible = visible;
         stamp({ type: visible ? 'suggestShow' : 'suggestHide', method: 'poll' });
       }
-    }, 50);
+    }, POLLING_INTERVAL_MS);
   }
 
   function setupSuggestionMenuDetection() {
@@ -271,30 +256,8 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       patchedSuggestController = ctrl;
       const widget = ctrl?._widget?.value;
       const list = widget?._list;
-
-      // Patch focus to record which item is focused
-      if (list && !originalListSetFocus) {
-        const orig = list.setFocus?.bind(list) || null;
-        if (orig) {
-          originalListSetFocus = orig;
-          list.setFocus = function(indexes) {
-            const idx = Array.isArray(indexes) ? indexes[0] : -1;
-            const it = list._items?.[idx];
-            if (it?.suggestion) {
-              stamp({
-                type: 'suggestFocus',
-                index: idx,
-                item: {
-                  label: it.suggestion.label,
-                  kind: it.suggestion.kind,
-                  insertText: it.suggestion.insertText,
-                },
-              });
-            }
-            return orig(indexes);
-          };
-        }
-      }
+      // Patch focus via shared helper
+      patchSuggestListFocusIfNeeded(list);
 
       // Wrap acceptance to record the selected item
       if (ctrl.acceptSelectedSuggestion && !originalAcceptSelected) {
@@ -572,7 +535,7 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
       const { widget, list } = getSuggestParts();
       const ready = () => !!(widget?.isVisible?.() && (list?._items?.length || 0) > 0);
       if (ready()) return true;
-      return await waitFor(ready, soft ? 120 : 300, 8);
+      return await waitFor(ready, soft ? SOFT_SUGGEST_TIMEOUT_MS : HARD_SUGGEST_TIMEOUT_MS, SUGGEST_POLL_MS);
     };
 
     // (removed) simulateNavigate helper was unused; navigation goes through simulateNavigationKey
