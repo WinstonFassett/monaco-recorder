@@ -45,6 +45,8 @@
     <div id="toolbar">
       <button id="recordBtn" disabled>⏺ Start Recording</button>
       <button id="playBtn" disabled>▶ Play</button>
+      <button id="exportBtn" disabled>Export</button>
+      <button id="importBtn" disabled>Import</button>
       <label>Speed % <input id="speed" type="number" value="200" min="10" max="1000" step="10" /></label>
       <label>Min delay (ms) <input id="minDelay" type="number" value="0" min="0" /></label>
       <label>Max delay (ms) <input id="maxDelay" type="number" value="1000" min="0" /></label>
@@ -53,7 +55,7 @@
     <div id="editor"></div>
 
     <script type="module">
-      import { createMonacoRecorder } from '../monaco-recorder.js';
+      import { createMonacoRecorder, serializeEvents, deserializeEvents } from '../monaco-recorder.js';
 
       let editor = null;
       let monaco = null;
@@ -85,6 +87,7 @@
 
       function wireUI() {
         $('recordBtn').disabled = false;
+        $('importBtn').disabled = false;
 
         $('recordBtn').addEventListener('click', () => {
           if (!recordingActive) {
@@ -99,6 +102,7 @@
             $('recordBtn').textContent = '⏺ Start Recording';
             setStatus(`Recorded ${recording.length} events`);
             $('playBtn').disabled = recording.length === 0;
+            $('exportBtn').disabled = recording.length === 0;
           }
         });
 
@@ -115,6 +119,48 @@
             onProgress: (i, total) => setStatus(`Playing ${i}/${total}`),
             onDone: () => setStatus('Idle'),
           });
+        });
+
+        $('exportBtn').addEventListener('click', () => {
+          if (recording.length === 0) return;
+          const json = serializeEvents(recording);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `recording-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          setStatus('Exported recording');
+        });
+
+        $('importBtn').addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'application/json';
+          input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const newRecording = deserializeEvents(e.target.result);
+                if (newRecording.length > 0) {
+                  recording = newRecording;
+                  setStatus(`Imported ${recording.length} events`);
+                  $('playBtn').disabled = false;
+                  $('exportBtn').disabled = false;
+                } else {
+                  setStatus('Import failed: Invalid format');
+                }
+              } catch (err) {
+                console.error(err);
+                setStatus('Import failed: Invalid JSON');
+              }
+            };
+            reader.readAsText(file);
+          };
+          input.click();
         });
       }
 

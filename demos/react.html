@@ -51,12 +51,13 @@
     <script type="module">
       import React, { useEffect, useRef, useState } from 'react';
       import { createRoot } from 'react-dom/client';
-      import { createMonacoRecorder } from '../monaco-recorder.js';
+      import { createMonacoRecorder, serializeEvents, deserializeEvents } from '../monaco-recorder.js';
 
       function App() {
         const containerRef = useRef(null);
         const editorRef = useRef(null);
         const recorderRef = useRef(null);
+        const importInputRef = useRef(null);
         const [ready, setReady] = useState(false);
         const [recordingActive, setRecordingActive] = useState(false);
         const [recording, setRecording] = useState([]);
@@ -116,14 +117,57 @@
           });
         };
 
+        const exportRecording = () => {
+          if (recording.length === 0) return;
+          const json = serializeEvents(recording);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `recording-react-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          setStatus('Exported recording');
+        };
+
+        const importRecording = () => {
+          importInputRef.current?.click();
+        };
+
+        const handleFileImport = (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const newRecording = deserializeEvents(ev.target.result);
+              if (newRecording.length > 0) {
+                setRecording(newRecording);
+                setStatus(`Imported ${newRecording.length} events`);
+              } else {
+                setStatus('Import failed: Invalid format');
+              }
+            } catch (err) {
+              console.error(err);
+              setStatus('Import failed: Invalid JSON');
+            }
+          };
+          reader.readAsText(file);
+          // Reset file input
+          e.target.value = '';
+        };
+
         return React.createElement(
           'div',
           { style: { height: '100%', position: 'relative' } },
+          React.createElement('input', { type: 'file', ref: importInputRef, style: { display: 'none' }, accept: '.json', onChange: handleFileImport }),
           React.createElement(
             'div',
             { className: 'toolbar' },
             React.createElement('button', { onClick: toggleRecord, disabled: !ready }, recordingActive ? '⏹ Stop Recording' : '⏺ Start Recording'),
             React.createElement('button', { onClick: play, disabled: !ready || recording.length === 0 }, '▶ Play'),
+            React.createElement('button', { onClick: exportRecording, disabled: !ready || recording.length === 0 }, 'Export'),
+            React.createElement('button', { onClick: importRecording, disabled: !ready }, 'Import'),
             React.createElement('label', null, 'Speed % ', React.createElement('input', { type: 'number', value: speed, min: 10, max: 1000, step: 10, onChange: (e)=>setSpeed(Number(e.target.value)||0) })),
             React.createElement('label', null, 'Min delay ', React.createElement('input', { type: 'number', value: minDelay, min: 0, onChange: (e)=>setMinDelay(Number(e.target.value)||0) })),
             React.createElement('label', null, 'Max delay ', React.createElement('input', { type: 'number', value: maxDelay, min: 0, onChange: (e)=>setMaxDelay(Number(e.target.value)||0) })),
