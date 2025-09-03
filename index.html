@@ -4,10 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Monaco Recorder Demos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
     <style>
       body { 
         font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; 
-        max-width: 800px; 
+        max-width: 1200px; 
         margin: 0 auto; 
         padding: 40px 20px;
         line-height: 1.6;
@@ -44,12 +45,103 @@
         text-decoration: none;
       }
       .github-link:hover { text-decoration: underline; }
+      
+      /* Demo Showcase Styles */
+      .demo-showcase {
+        display: flex;
+        margin: 30px 0;
+        border: 1px solid #444;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .demo-tabs {
+        width: 250px;
+        background: #2a2a2a;
+        border-right: 1px solid #444;
+      }
+      .demo-tab {
+        padding: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #444;
+        transition: background-color 0.2s;
+      }
+      .demo-tab:hover { background: #333; }
+      .demo-tab.active {
+        background: #383838;
+        border-right: 2px solid #4a90e2;
+      }
+      .demo-tab h4 {
+        margin: 0 0 8px;
+        color: #4a90e2;
+      }
+      .demo-tab p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+      .demo-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      #editor-container {
+        flex: 1;
+        min-height: 400px;
+      }
+      .demo-controls {
+        padding: 10px;
+        background: #2a2a2a;
+        border-top: 1px solid #444;
+        display: flex;
+        gap: 10px;
+      }
+      .demo-controls button {
+        background: #4a90e2;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .demo-controls button:hover { background: #357abd; }
+      .demo-controls button:disabled { background: #2a2a2a; color: #666; cursor: not-allowed; }
     </style>
   </head>
   <body>
     <h1>🎥 Monaco Recorder</h1>
     <p>A lightweight library for recording and replaying user interactions in Monaco Editor.</p>
     
+    <h2>Live Demo</h2>
+    <div class="demo-showcase">
+      <div class="demo-tabs">
+        <div class="demo-tab active" data-demo="js">
+          <h4>JavaScript</h4>
+          <p>Functions and array operations with console logging</p>
+        </div>
+        <div class="demo-tab" data-demo="ts">
+          <h4>TypeScript</h4>
+          <p>Interfaces, classes, and type-safe operations</p>
+        </div>
+        <div class="demo-tab" data-demo="react">
+          <h4>React Hooks</h4>
+          <p>React component with state and effect hooks</p>
+        </div>
+        <div class="demo-tab" data-demo="node">
+          <h4>Node.js</h4>
+          <p>File system and async/await operations</p>
+        </div>
+      </div>
+      <div class="demo-content">
+        <div id="editor-container"></div>
+        <div class="demo-controls">
+          <button id="play-btn">▶️ Play</button>
+          <button id="pause-btn" disabled>⏸️ Pause</button>
+          <button id="restart-btn">🔄 Restart</button>
+        </div>
+      </div>
+    </div>
+
     <h2>Interactive Demos</h2>
     <div class="demo-grid">
       <a href="demos/vanilla.html" class="demo-card">
@@ -97,9 +189,99 @@ recorder.play(events);</code></pre>
       📖 Documentation
     </a>
 
-    <script>
-      // Add simple analytics/tracking if desired
-      console.log('Monaco Recorder demos loaded');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <script type="module">
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+
+      let editor, recorder, currentDemo = 'js';
+      const demos = {
+        js: '/recordings/samples/basic-usage.json',
+        ts: '/recordings/samples/typescript.ts',
+        react: '/recordings/samples/react-integration.json',
+        node: '/recordings/samples/node-example.json'
+      };
+
+      const demoLanguages = {
+        js: 'javascript',
+        ts: 'typescript',
+        react: 'javascript',
+        node: 'javascript'
+      };
+
+      require(['vs/editor/editor.main'], async function() {
+        editor = monaco.editor.create(document.getElementById('editor-container'), {
+          value: '// Loading demo...',
+          language: 'javascript',
+          theme: 'vs-dark',
+          minimap: { enabled: false },
+          fontSize: 14,
+          lineNumbers: 'on',
+          renderLineHighlight: 'all',
+          scrollBeyondLastLine: false
+        });
+
+        const { createMonacoRecorder } = await import('./monaco-recorder.js');
+        recorder = createMonacoRecorder(editor, monaco);
+        loadDemo('js');
+      });
+
+      async function loadDemo(demoId) {
+        try {
+          const response = await fetch(demos[demoId]);
+          const text = await response.text();
+          let recording;
+          
+          // Set the appropriate language for the editor
+          editor.updateOptions({
+            language: demoLanguages[demoId] || 'javascript'
+          });
+
+          // Handle TypeScript files differently
+          if (demoId === 'ts') {
+            recording = [{
+              type: 'initialState',
+              content: text,
+              position: { lineNumber: 1, column: 1 }
+            }];
+          } else {
+            recording = JSON.parse(text);
+          }
+
+          currentDemo = demoId;
+          document.querySelectorAll('.demo-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.demo === demoId);
+          });
+          recorder.play(recording);
+        } catch (error) {
+          console.error('Error loading demo:', error);
+        }
+      }
+
+      document.querySelectorAll('.demo-tab').forEach(tab => {
+        tab.addEventListener('click', () => loadDemo(tab.dataset.demo));
+      });
+
+      const playBtn = document.getElementById('play-btn');
+      const pauseBtn = document.getElementById('pause-btn');
+      const restartBtn = document.getElementById('restart-btn');
+
+      playBtn.addEventListener('click', () => {
+        recorder.resume();
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        recorder.pause();
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+      });
+
+      restartBtn.addEventListener('click', () => {
+        loadDemo(currentDemo);
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+      });
     </script>
   </body>
 </html>

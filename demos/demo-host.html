@@ -1,0 +1,498 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monaco Recorder Demos</title>
+    <style>
+      :root {
+        --primary: #4a90e2;
+        --bg: #1e1e1e;
+        --surface: #252526;
+        --border: #444;
+        --text: #f0f0f0;
+        --text-muted: #888;
+      }
+      
+      * { box-sizing: border-box; }
+      body { 
+        margin: 0; 
+        font-family: -apple-system, sans-serif; 
+        background: var(--bg); 
+        color: var(--text);
+        line-height: 1.5;
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      header {
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 30px;
+      }
+      
+      h1 { 
+        margin: 0;
+        color: var(--primary);
+      }
+      
+      .demos-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        height: calc(100vh - 150px);
+      }
+      
+      .demo-list {
+        background: var(--surface);
+        border-radius: 6px;
+        padding: 15px;
+        overflow-y: auto;
+      }
+      
+      .demo-item {
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      
+      .demo-item:hover {
+        background: rgba(255,255,255,0.1);
+      }
+      
+      .demo-item.active {
+        background: var(--primary);
+        color: white;
+      }
+      
+      .demo-preview {
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .demo-container {
+        flex: 1;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .demo-toolbar {
+        padding: 10px 15px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        gap: 10px;
+      }
+      
+      .demo-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0;
+        padding: 15px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      
+      button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      button.secondary {
+        background: transparent;
+        border: 1px solid var(--border);
+      }
+      
+      #editor-container {
+        flex: 1;
+        min-height: 0;
+      }
+      
+      .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-left: auto;
+      }
+      
+      .speed-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+      
+      input[type="range"] {
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Monaco Recorder Demos</h1>
+      </header>
+      
+      <div class="demos-grid">
+        <div class="demo-list" id="demoList">
+          <!-- Demos will be loaded here -->
+          <div class="demo-item" data-demo="typescript">TypeScript Features</div>
+          <div class="demo-item" data-demo="react">React Component</div>
+          <div class="demo-item" data-demo="refactoring">Refactoring Demo</div>
+        </div>
+        
+        <div class="demo-preview">
+          <h2 class="demo-title" id="demoTitle">Select a demo</h2>
+          <div class="demo-container">
+            <div id="editor-container"></div>
+            <div class="demo-toolbar">
+              <button id="recordBtn">
+                <span class="icon">⏺</span>
+                <span>Record</span>
+              </button>
+              <button id="playBtn" disabled>
+                <span class="icon">▶</span>
+                <span>Play</span>
+              </button>
+              <button id="exportBtn" class="secondary" disabled>
+                <span class="icon">💾</span>
+                <span>Export</span>
+              </button>
+              <div class="controls">
+                <div class="speed-control">
+                  <span>Speed:</span>
+                  <input type="range" id="speed" min="1" max="10" value="5">
+                  <span id="speedValue">1.0x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Monaco loader
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js';
+      script.onload = () => {
+        window.require.config({ 
+          paths: { 
+            vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs',
+            'vs/language/typescript': 'https://unpkg.com/monaco-editor@0.45.0/min/vs/language/typescript'
+          }
+        });
+        window.require(['vs/editor/editor.main'], initApp);
+      };
+      document.head.appendChild(script);
+      
+      // Demo content
+      const DEMOS = {
+        typescript: {
+          name: 'TypeScript Features',
+          language: 'typescript',
+          code: `// TypeScript Demo
+interface User {
+  id: number;
+  name: string;
+  role: 'admin' | 'user' | 'guest';
+  lastLogin?: Date;
+}
+
+class UserManager {
+  private users: User[] = [];
+  
+  addUser(user: Omit<User, 'id'>) {
+    const newUser = { ...user, id: Date.now() };
+    this.users.push(newUser);
+    return newUser;
+  }
+  
+  findUsers(predicate: (user: User) => boolean) {
+    return this.users.filter(predicate);
+  }
+}
+
+// Try these features:
+// 1. Hover over types
+// 2. Try autocompletion (Ctrl+Space)
+// 3. Right-click for refactoring
+// 4. See type errors in real-time`
+        },
+        react: {
+          name: 'React Component',
+          language: 'typescript',
+          code: `// React Component Demo
+import React, { useState } from 'react';
+
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+const TodoApp: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    
+    setTodos([...todos, {
+      id: Date.now(),
+      text: input,
+      completed: false
+    }]);
+    setInput('');
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  return (
+    <div className="todo-app">
+      <h1>Todo App</h1>
+      <form onSubmit={addTodo}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Add a todo..."
+        />
+        <button type="submit">Add</button>
+      </form>
+      <ul>
+        {todos.map(todo => (
+          <li 
+            key={todo.id} 
+            style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+            onClick={() => toggleTodo(todo.id)}
+          >
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// Try these features:
+// 1. JSX syntax highlighting
+// 2. TypeScript with React types
+// 3. Component props completion`
+        },
+        refactoring: {
+          name: 'Refactoring Demo',
+          language: 'typescript',
+          code: `// Refactoring Demo
+// Try these refactoring actions:
+// 1. Right-click on 'calculateTotal' and select "Extract to function"
+// 2. Right-click on 'product' and select "Extract to interface"
+// 3. Right-click on 'greet' and select "Convert to arrow function"
+// 4. Try renaming variables and see all references update
+
+function calculateTotal(items) {
+  let total = 0;
+  for (let i = 0; i < items.length; i++) {
+    total += items[i].price * items[i].quantity;
+  }
+  return total;
+}
+
+const product = {
+  id: 1,
+  name: 'Laptop',
+  price: 999.99,
+  inStock: true
+};
+
+function greet(name) {
+  return 'Hello, ' + name + '!';
+}
+
+// Try extracting the type of the items parameter
+const orderItems = [
+  { id: 1, name: 'Mouse', price: 29.99, quantity: 2 },
+  { id: 2, name: 'Keyboard', price: 59.99, quantity: 1 },
+  { id: 3, name: 'Monitor', price: 199.99, quantity: 1 }
+];
+
+const total = calculateTotal(orderItems);
+console.log('Order total:', total);`
+        }
+      };
+      
+      // App state
+      let editor;
+      let recorder;
+      let currentDemo = null;
+      
+      async function initApp() {
+        // Initialize Monaco editor
+        editor = monaco.editor.create(document.getElementById('editor-container'), {
+          value: '// Select a demo from the left panel\n',
+          language: 'typescript',
+          theme: 'vs-dark',
+          minimap: { enabled: true },
+          automaticLayout: true,
+          fontSize: 14,
+          lineNumbers: 'on',
+          roundedSelection: true,
+          scrollBeyondLastLine: false,
+          readOnly: false,
+          tabSize: 2
+        });
+        
+        // Import the recorder
+        const { createMonacoRecorder } = await import('../monaco-recorder.js');
+        recorder = createMonacoRecorder(editor, { monaco });
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+        // Load the first demo
+        loadDemo('typescript');
+      }
+      
+      function setupEventListeners() {
+        // Demo selection
+        document.querySelectorAll('.demo-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const demoId = item.dataset.demo;
+            loadDemo(demoId);
+            
+            // Update active state
+            document.querySelectorAll('.demo-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+          });
+        });
+        
+        // Toolbar buttons
+        document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+        document.getElementById('playBtn').addEventListener('click', playRecording);
+        document.getElementById('exportBtn').addEventListener('click', exportRecording);
+        
+        // Speed control
+        const speedInput = document.getElementById('speed');
+        const speedValue = document.getElementById('speedValue');
+        
+        speedInput.addEventListener('input', (e) => {
+          const speed = parseFloat(e.target.value) / 5;
+          speedValue.textContent = speed.toFixed(1) + 'x';
+          if (recorder) {
+            recorder.setPlaybackSpeed(speed);
+          }
+        });
+      }
+      
+      function loadDemo(demoId) {
+        const demo = DEMOS[demoId];
+        if (!demo) return;
+        
+        currentDemo = demoId;
+        document.getElementById('demoTitle').textContent = demo.name;
+        
+        // Set editor content and language
+        const model = monaco.editor.createModel(
+          demo.code,
+          demo.language
+        );
+        
+        editor.setModel(model);
+        
+        // Reset recorder
+        if (recorder) {
+          recorder.clearEvents();
+          updateUI();
+        }
+      }
+      
+      function toggleRecording() {
+        if (recorder.isRecording()) {
+          recorder.stop();
+          document.getElementById('recordBtn').innerHTML = 
+            '<span class="icon">⏺</span><span>Record</span>';
+        } else {
+          recorder.start();
+          document.getElementById('recordBtn').innerHTML = 
+            '<span class="icon">⏹</span><span>Stop</span>';
+        }
+        updateUI();
+      }
+      
+      async function playRecording() {
+        if (recorder.getEvents().length === 0) return;
+        
+        const playBtn = document.getElementById('playBtn');
+        playBtn.disabled = true;
+        
+        try {
+          await recorder.play();
+        } catch (error) {
+          console.error('Playback error:', error);
+        } finally {
+          playBtn.disabled = false;
+        }
+      }
+      
+      function exportRecording() {
+        const events = recorder.getEvents();
+        if (events.length === 0) return;
+        
+        const data = JSON.stringify(events, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `monaco-demo-${currentDemo}-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      
+      function updateUI() {
+        const hasEvents = recorder.getEvents().length > 0;
+        const isRecording = recorder.isRecording();
+        
+        document.getElementById('playBtn').disabled = !hasEvents || isRecording;
+        document.getElementById('exportBtn').disabled = !hasEvents || isRecording;
+      }
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        if (editor) {
+          editor.layout();
+        }
+      });
+    </script>
+  </body>
+</html>

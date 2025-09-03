@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Monaco Recorder Demo (Vanilla)</title>
+    <title>Monaco Recorder Demos</title>
     <style>
       html, body {
         height: 100%;
@@ -15,6 +15,9 @@
         padding: 0.5rem;
         background: #1e1e1e;
         border-bottom: 1px solid #333;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
       }
       #editor {
         height: calc(100vh - 50px);
@@ -37,7 +40,6 @@
         border: 1px solid #333;
         padding: 0.5rem;
         border-radius: 4px;
-        margin-right: 0.5rem;
       }
     </style>
   </head>
@@ -67,18 +69,13 @@
       let recording = null;
       let isPlaying = false;
 
-      // Load Monaco
       window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' }});
       window.require(['vs/editor/editor.main'], () => {
-        window._monacoLoaded = true;
-        initDemo();
+        monaco = window.monaco;
+        initEditor();
       });
 
-      async function initDemo() {
-        if (!window._monacoLoaded) return;
-        monaco = window.monaco;
-
-        // Create editor
+      async function initEditor() {
         editor = monaco.editor.create(document.getElementById('editor'), {
           value: '// Select a demo from the dropdown...',
           language: 'javascript',
@@ -87,11 +84,12 @@
           minimap: { enabled: false }
         });
 
-        // Initialize recorder
         const { createMonacoRecorder } = await import('../monaco-recorder.js');
         recorder = createMonacoRecorder(editor, monaco);
+        setupControls();
+      }
 
-        // Setup UI handlers
+      function setupControls() {
         const demoSelect = document.getElementById('demoSelect');
         const playBtn = document.getElementById('playBtn');
         const stopBtn = document.getElementById('stopBtn');
@@ -102,19 +100,18 @@
           if (!demo) return;
           
           try {
-            // Load code
             const codeResponse = await fetch(`../recordings/samples/${demo}.${demo === 'react' ? 'jsx' : 'ts'}`);
             const code = await codeResponse.text();
             
-            // Update editor
-            const model = monaco.editor.createModel(code, demo === 'react' ? 'javascript' : 'typescript');
+            const model = monaco.editor.createModel(
+              code,
+              demo === 'react' ? 'javascript' : 'typescript'
+            );
             editor.setModel(model);
             
-            // Load recording
             const recordingResponse = await fetch(`../recordings/samples/${demo}.json`);
             recording = await recordingResponse.json();
             
-            // Enable play
             playBtn.disabled = false;
             stopBtn.disabled = true;
           } catch (err) {
@@ -129,7 +126,11 @@
             playBtn.textContent = '▶ Play';
           } else {
             recorder.play(recording.events, {
-              speed: parseFloat(speedSelect.value),
+              speed: parseFloat(speedSelect.value) / 100,
+              onStart: () => {
+                playBtn.textContent = '⏸ Pause';
+                stopBtn.disabled = false;
+              },
               minDelayMs: 0,
               maxDelayMs: 1000,
               onDone: () => {
@@ -150,59 +151,7 @@
           playBtn.textContent = '▶ Play';
           stopBtn.disabled = true;
         });
-            // Load recording
-            const recordingResponse = await fetch(`../recordings/samples/${demo}.json`);
-            recording = await recordingResponse.json();
-            
-            // Enable play
-            $('playBtn').disabled = false;
-            $('stopBtn').disabled = true;
-          } catch (err) {
-            console.error('Failed to load demo:', err);
-          }
-        });
       }
-      window.initDemo = initDemo;
-
-        const importBtn = document.getElementById('importBtn');
-        importBtn.addEventListener('click', () => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'application/json';
-          input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const newRecording = deserializeEvents(e.target.result);
-                if (newRecording.length > 0) {
-                  recording = newRecording;
-                  setStatus(`Imported ${recording.length} events`);
-                  $('playBtn').disabled = false;
-                  $('exportBtn').disabled = false;
-                } else {
-                  setStatus('Import failed: Invalid format');
-                }
-              } catch (err) {
-                console.error(err);
-                setStatus('Import failed: Invalid JSON');
-              }
-            };
-            reader.readAsText(file);
-          };
-          input.click();
-        });
-      }
-
-      function clampInt(v, min, max, fallback) {
-        const n = (v === '' || v === null || v === undefined) ? NaN : Number(v);
-        if (!Number.isFinite(n)) return fallback;
-        return Math.min(max, Math.max(min, Math.floor(n)));
-      }
-
-      // Expose init for AMD callback
-      window.initDemo = initDemo;
     </script>
   </body>
 </html>

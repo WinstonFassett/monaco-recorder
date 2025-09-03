@@ -1,0 +1,7 @@
+[
+  {
+    "type": "initialState",
+    "content": "const fs = require('fs').promises;\nconst path = require('path');\n\nasync function processFiles(directory) {\n  try {\n    // Read directory contents\n    const files = await fs.readdir(directory);\n    \n    // Process each file\n    for (const file of files) {\n      const filePath = path.join(directory, file);\n      const stats = await fs.stat(filePath);\n      \n      if (stats.isFile()) {\n        console.log(`Processing ${file}...`);\n        // Read and process file content\n        const content = await fs.readFile(filePath, 'utf8');\n        // Do something with content\n      }\n    }\n    \n    console.log('All files processed!');\n  } catch (error) {\n    console.error('Error:', error.message);\n  }\n}\n\n// Usage\nprocessFiles('./data');",
+    "position": { "lineNumber": 1, "column": 1 }
+  }
+]

@@ -1,0 +1,60 @@
+[
+  {
+    "type": "initialState",
+    "content": "// JavaScript Array Operations\n\n// Sample data\nconst numbers = [1, 2, 3, 4, 5];\nconst fruits = ['apple', 'banana', 'orange', 'mango'];\n\n// Array methods with console logging\nconsole.log('Original arrays:');\nconsole.log('Numbers:', numbers);\nconsole.log('Fruits:', fruits);"
+  },
+  {
+    "type": "typing",
+    "timestamp": 1000,
+    "text": "\n\n// Map: Double each number\nconst doubled = numbers.map(n => n * 2);\nconsole.log('\nDoubled numbers:', doubled);",
+    "position": {
+      "lineNumber": 11,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 2000,
+    "text": "\n\n// Filter: Get even numbers\nconst evenNumbers = numbers.filter(n => n % 2 === 0);\nconsole.log('Even numbers:', evenNumbers);",
+    "position": {
+      "lineNumber": 14,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 3000,
+    "text": "\n\n// Reduce: Calculate sum\nconst sum = numbers.reduce((acc, n) => acc + n, 0);\nconsole.log('Sum of numbers:', sum);",
+    "position": {
+      "lineNumber": 17,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 4000,
+    "text": "\n\n// String operations on fruits\nconst upperFruits = fruits.map(f => f.toUpperCase());\nconsole.log('\nUppercase fruits:', upperFruits);",
+    "position": {
+      "lineNumber": 20,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 5000,
+    "text": "\n\n// Find long fruits (> 5 chars)\nconst longFruits = fruits.filter(f => f.length > 5);\nconsole.log('Long fruits:', longFruits);",
+    "position": {
+      "lineNumber": 23,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 6000,
+    "text": "\n\n// Join fruits with commas\nconst fruitList = fruits.join(', ');\nconsole.log('Fruit list:', fruitList);",
+    "position": {
+      "lineNumber": 26,
+      "column": 1
+    }
+  }
+]
