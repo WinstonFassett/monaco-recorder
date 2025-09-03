@@ -173,28 +173,32 @@
     // Demo configurations
     const DEMOS = [
       {
-        id: 'basic-usage',
-        title: 'Basic Usage',
-        description: 'Learn how to record and play back editor actions',
+        id: 'js',
+        title: 'JavaScript',
+        description: 'Array operations and functional programming with console logging',
         recording: 'samples/basic-usage.json',
-        code: '// Basic Usage Example\nconst { createMonacoRecorder } = window.monacoRecorder;\n\n// Create editor instance\nconst editor = monaco.editor.create(\n  document.getElementById(\'editor\'),\n  { value: \'// Start recording...\\n\' }\n);\n\n// Initialize recorder\nconst recorder = createMonacoRecorder(editor);\n\n// Start recording\nrecorder.start();\n\n// Stop recording\n// recorder.stop();\n\n// Play recording\n// recorder.play();',
         language: 'javascript'
       },
       {
-        id: 'custom-events',
-        title: 'Custom Events',
-        description: 'Using custom events with the recorder',
-        recording: 'samples/custom-events.json',
-        code: '// Custom Events Example\nconst recorder = createMonacoRecorder(editor, {\n  onStart: () => console.log(\'Recording started\'),\n  onStop: () => console.log(\'Recording stopped\'),\n  onPlay: () => console.log(\'Playback started\'),\n  onPause: () => console.log(\'Playback paused\'),\n  onEnd: () => console.log(\'Playback finished\')\n});',
-        language: 'javascript'
-      },
-      {
-        id: 'react-integration',
-        title: 'React Integration',
-        description: 'Using Monaco Recorder in a React app',
-        recording: 'samples/react-integration.json',
-        code: '// React Integration Example\nimport { useEffect, useRef } from \'react\';\nimport * as monaco from \'monaco-editor\';\nimport { createMonacoRecorder } from \'monaco-recorder\';\n\nfunction EditorWithRecorder() {\n  const editorRef = useRef(null);\n  const recorderRef = useRef(null);\n  \n  useEffect(() => {\n    // Initialize editor\n    const editor = monaco.editor.create(\n      editorRef.current,\n      { value: \'// Start coding...\\n\' }\n    );\n    \n    // Initialize recorder\n    recorderRef.current = createMonacoRecorder(editor);\n    \n    return () => editor.dispose();\n  }, []);\n  \n  return (\n    <div>\n      <div ref={editorRef} style={{ height: \'300px\' }} />\n      <button onClick={() => recorderRef.current.start()}>\n        Start Recording\n      </button>\n    </div>\n  );\n}',
+        id: 'typescript',
+        title: 'TypeScript',
+        description: 'Interfaces, classes and type-safe programming',
+        recording: 'samples/typescript.json',
         language: 'typescript'
+      },
+      {
+        id: 'react',
+        title: 'React Hooks',
+        description: 'Modern React component with hooks and state management',
+        recording: 'samples/react.json',
+        language: 'javascript'
+      },
+      {
+        id: 'node',
+        title: 'Node.js',
+        description: 'Async file operations and error handling',
+        recording: 'samples/node-example.json',
+        language: 'javascript'
       }
     ];
     
@@ -202,6 +206,7 @@
     let editor;
     let currentDemoIndex = 0;
     let recorder;
+    let currentRecording = null;
     
     // Initialize the app
     window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' }});
@@ -222,7 +227,7 @@
       });
     }
     
-    function loadDemo(index) {
+    async function loadDemo(index) {
       if (index < 0 || index >= DEMOS.length) return;
       
       currentDemoIndex = index;
@@ -232,26 +237,43 @@
       document.getElementById('demoTitle').textContent = demo.title;
       document.getElementById('demoDescription').textContent = demo.description;
       
-      // Update editor
-      const model = monaco.editor.createModel(
-        demo.code,
-        demo.language
-      );
-      
-      if (editor.getModel()) {
-        editor.getModel().dispose();
+      // Load recording first
+      try {
+        const response = await fetch(demo.recording);
+        const recording = await response.json();
+        
+        // Initialize recorder with monaco
+        if (recorder) {
+          recorder.stopPlayback();
+        }
+        recorder = window.monacoRecorder.createMonacoRecorder(editor, monaco);
+        
+        // Get initial content from recording
+        const initial = recording.find(e => e.type === 'initialState');
+        if (initial && initial.content) {
+          // Create new model with correct language
+          const model = monaco.editor.createModel(initial.content, demo.language);
+          if (editor.getModel()) {
+            editor.getModel().dispose();
+          }
+          editor.setModel(model);
+        }
+        
+        // Store recording for playback
+        currentRecording = recording;
+        recorder.stopPlayback();
+        
+        // Enable controls
+        document.getElementById('playPauseBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        
+      } catch (error) {
+        console.error('Failed to load demo:', error);
+        document.getElementById('playPauseBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = true;
       }
-      editor.setModel(model);
       
-      // Initialize recorder
-      if (recorder) {
-        recorder.dispose();
-      }
-      
-      // Load recording if available
-      loadRecording(demo.recording);
-      
-      // Update navigation buttons
+      // Update navigation
       document.getElementById('prevBtn').disabled = index === 0;
       document.getElementById('nextBtn').disabled = index === DEMOS.length - 1;
       
@@ -270,23 +292,25 @@
         const response = await fetch(recordingPath);
         const events = await response.json();
         
-        // Initialize recorder with loaded events
-        recorder = window.monacoRecorder.createMonacoRecorder(editor, {
-          events,
-          playbackSpeed: parseFloat(document.getElementById('speedSelect').value)
-        });
+        // Initialize recorder
+        recorder = window.monacoRecorder.createMonacoRecorder(editor, monaco);
+        
+        // Set up the recording for playback
+        recorder.setPlaybackSpeed(parseFloat(document.getElementById('speedSelect').value));
+        recorder.loadEvents(events);
         
         // Set up event listeners
-        recorder.on('play', () => {
+        // Set up event listeners for playback
+        recorder.onPlaybackStarted(() => {
           document.getElementById('playPauseBtn').textContent = 'Pause';
           document.getElementById('stopBtn').disabled = false;
         });
         
-        recorder.on('pause', () => {
+        recorder.onPlaybackPaused(() => {
           document.getElementById('playPauseBtn').textContent = 'Resume';
         });
         
-        recorder.on('end', () => {
+        recorder.onPlaybackFinished(() => {
           document.getElementById('playPauseBtn').textContent = 'Play';
           document.getElementById('stopBtn').disabled = true;
         });
@@ -296,7 +320,7 @@
         
       } catch (error) {
         console.error('Failed to load recording:', error);
-        recorder = window.monacoRecorder.createMonacoRecorder(editor);
+        recorder = window.monacoRecorder.createMonacoRecorder(editor, monaco);
         document.getElementById('playPauseBtn').disabled = true;
         document.getElementById('stopBtn').disabled = true;
       }
@@ -330,25 +354,42 @@
       
       // Playback controls
       document.getElementById('playPauseBtn').addEventListener('click', () => {
-        if (!recorder) return;
+        if (!recorder || !currentRecording) return;
         
         if (recorder.isPlaying()) {
-          recorder.pause();
+          recorder.stopPlayback();
+          document.getElementById('playPauseBtn').textContent = 'Play';
+          document.getElementById('stopBtn').disabled = true;
         } else {
-          recorder.play();
+          recorder.play(currentRecording, {
+            speed: parseFloat(document.getElementById('speedSelect').value) * 100,
+            onDone: () => {
+              document.getElementById('playPauseBtn').textContent = 'Play';
+              document.getElementById('stopBtn').disabled = true;
+            }
+          });
+          document.getElementById('playPauseBtn').textContent = 'Pause';
+          document.getElementById('stopBtn').disabled = false;
         }
       });
       
       document.getElementById('stopBtn').addEventListener('click', () => {
         if (recorder) {
-          recorder.stop();
+          recorder.stopPlayback();
         }
       });
       
       // Speed control
       document.getElementById('speedSelect').addEventListener('change', (e) => {
-        if (recorder) {
-          recorder.setPlaybackSpeed(parseFloat(e.target.value));
+        if (recorder && currentRecording && recorder.isPlaying()) {
+          recorder.stopPlayback();
+          recorder.play(currentRecording, {
+            speed: parseFloat(e.target.value) * 100,
+            onDone: () => {
+              document.getElementById('playPauseBtn').textContent = 'Play';
+              document.getElementById('stopBtn').disabled = true;
+            }
+          });
         }
       });
     }

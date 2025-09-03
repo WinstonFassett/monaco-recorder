@@ -248,10 +248,16 @@ recorder.play(events);</code></pre>
           }
 
           currentDemo = demoId;
+          currentRecording = recording;
           document.querySelectorAll('.demo-tab').forEach(tab => {
             tab.classList.toggle('active', tab.dataset.demo === demoId);
           });
-          recorder.play(recording);
+          recorder.play(recording, {
+            onDone: () => {
+              playBtn.disabled = false;
+              pauseBtn.disabled = true;
+            }
+          });
         } catch (error) {
           console.error('Error loading demo:', error);
         }
@@ -265,22 +271,31 @@ recorder.play(events);</code></pre>
       const pauseBtn = document.getElementById('pause-btn');
       const restartBtn = document.getElementById('restart-btn');
 
+      let currentRecording = null;
+      
       playBtn.addEventListener('click', () => {
-        recorder.resume();
+        if (!currentRecording) return;
+        recorder.play(currentRecording, {
+          onDone: () => {
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+          }
+        });
         playBtn.disabled = true;
         pauseBtn.disabled = false;
       });
 
       pauseBtn.addEventListener('click', () => {
-        recorder.pause();
+        recorder.stopPlayback();
         playBtn.disabled = false;
         pauseBtn.disabled = true;
       });
 
       restartBtn.addEventListener('click', () => {
+        recorder.stopPlayback();
         loadDemo(currentDemo);
-        playBtn.disabled = true;
-        pauseBtn.disabled = false;
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
       });
     </script>
   </body>
