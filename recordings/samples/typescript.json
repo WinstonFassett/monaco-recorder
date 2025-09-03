@@ -1,55 +1,7 @@
-{
-  "v": 1,
-  "events": [
-    {
-      "type": "content",
-      "text": "interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nclass UserService {\n  private users: User[] = [];\n\n  addUser(user: User): void {\n    this.users.push(user);\n  }\n\n  findUserById(id: number): User | undefined {\n    return this.users.find(u => u.id === id);\n  }\n}",
-      "timestamp": 0
-    },
-    {
-      "type": "selection",
-      "selection": {
-        "startLineNumber": 1,
-        "startColumn": 11,
-        "endLineNumber": 1,
-        "endColumn": 15
-      },
-      "timestamp": 1000
-    },
-    {
-      "type": "content",
-      "text": "Customer",
-      "timestamp": 2000
-    },
-    {
-      "type": "selection",
-      "selection": {
-        "startLineNumber": 7,
-        "startColumn": 20,
-        "endLineNumber": 7,
-        "endColumn": 24
-      },
-      "timestamp": 3000
-    },
-    {
-      "type": "content",
-      "text": "Customer",
-      "timestamp": 4000
-    },
-    {
-      "type": "selection",
-      "selection": {
-        "startLineNumber": 9,
-        "startColumn": 11,
-        "endLineNumber": 9,
-        "endColumn": 15
-      },
-      "timestamp": 5000
-    },
-    {
-      "type": "content",
-      "text": "Customer",
-      "timestamp": 6000
-    }
-  ]
-}
+[{
+  "type": "initialState",
+  "content": "// Basic TypeScript Example\n\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nclass UserService {\n  private users: User[] = [];\n\n  addUser(user: User): void {\n    this.users.push(user);\n  }\n\n  findUserById(id: number): User | undefined {\n    return this.users.find(u => u.id === id);\n  }\n}\n",
+  "position": {"lineNumber": 1, "column": 1},
+  "selection": {"startLineNumber": 1, "startColumn": 1, "endLineNumber": 1, "endColumn": 1},
+  "timestamp": 0
+}]
