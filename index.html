@@ -196,6 +196,11 @@ recorder.play(events);</code></pre>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
     <script type="module">
+      const playConfig = {
+        speed: 3,
+        minDelayMs: 0,
+        maxDelayMs: 400
+      };
       require.config({ 
         paths: { 
           vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'
@@ -333,6 +338,7 @@ recorder.play(events);</code></pre>
             tab.classList.toggle('active', tab.dataset.demo === demoId);
           });
           recorder.play(recording, {
+            ...playConfig,
             onDone: () => {
               playBtn.disabled = false;
               pauseBtn.disabled = true;
@@ -356,6 +362,7 @@ recorder.play(events);</code></pre>
       playBtn.addEventListener('click', () => {
         if (!currentRecording) return;
         recorder.play(currentRecording, {
+          ...playConfig,
           onDone: () => {
             playBtn.disabled = false;
             pauseBtn.disabled = true;
