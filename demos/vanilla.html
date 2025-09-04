@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -8,152 +8,170 @@
       html, body {
         height: 100%;
         margin: 0;
-        padding: 0;
-        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background-color: #1e1e1e;
+        color: #f0f0f0;
       }
-      .toolbar {
-        padding: 0.5rem;
-        background: #1e1e1e;
-        border-bottom: 1px solid #333;
+      #toolbar {
+        padding: 8px;
+        border-bottom: 1px solid #444;
+        display: flex;
+        gap: 8px;
+        align-items: center;
       }
-      #editor {
-        height: calc(100vh - 50px);
-      }
-      button {
-        background: #0e639c;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      select {
-        background: #1e1e1e;
-        color: white;
-        border: 1px solid #333;
-        padding: 0.5rem;
-        border-radius: 4px;
-        margin-right: 0.5rem;
-      }
+      #editor { position: absolute; top: 48px; bottom: 0; left: 0; right: 0; }
+      label { font-size: 12px; color: #cccccc; }
+      input[type=number] { width: 80px; background-color: #2a2a2a; color: #f0f0f0; border: 1px solid #444; }
+      button { background-color: #4a90e2; color: white; border: none; padding: 5px 10px; border-radius: 4px; }
+      button:disabled { background-color: #555; color: #aaa; }
     </style>
+    <script>
+      // Load Monaco via AMD loader
+      window.addEventListener('DOMContentLoaded', () => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js';
+        script.onload = () => {
+          window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' } });
+          window.require(['vs/editor/editor.main'], () => {
+            window._monacoLoaded = true;
+            initDemo();
+          });
+        };
+        document.head.appendChild(script);
+      });
+    </script>
   </head>
   <body>
-    <div class="toolbar">
-      <select id="demoSelect">
-        <option value="">Select demo...</option>
-        <option value="typescript">TypeScript Class</option>
-        <option value="react">React Component</option>
-      </select>
+    <div id="toolbar">
+      <button id="recordBtn" disabled>⏺ Start Recording</button>
       <button id="playBtn" disabled>▶ Play</button>
-      <button id="stopBtn" disabled>⏹ Stop</button>
-      <select id="speedSelect">
-        <option value="50">0.5x</option>
-        <option value="100" selected>1x</option>
-        <option value="200">2x</option>
-        <option value="400">4x</option>
-      </select>
+      <button id="exportBtn" disabled>Export</button>
+      <button id="importBtn" disabled>Import</button>
+      <label>Speed % <input id="speed" type="number" value="200" min="10" max="1000" step="10" /></label>
+      <label>Min delay (ms) <input id="minDelay" type="number" value="0" min="0" /></label>
+      <label>Max delay (ms) <input id="maxDelay" type="number" value="1000" min="0" /></label>
+      <span id="status" style="margin-left:auto;color:#cccccc">Idle</span>
     </div>
     <div id="editor"></div>
 
-    <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
     <script type="module">
+      import { createMonacoRecorder, serializeEvents, deserializeEvents } from '../monaco-recorder.js';
+
       let editor = null;
       let monaco = null;
       let recorder = null;
-      let recording = null;
-      let isPlaying = false;
-
-      // Load Monaco
-      window.require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs' }});
-      window.require(['vs/editor/editor.main'], () => {
-        window._monacoLoaded = true;
-        initDemo();
-      });
+      let recording = [];
+      let recordingActive = false;
 
       async function initDemo() {
+        // Wait for loader
         if (!window._monacoLoaded) return;
         monaco = window.monaco;
-
-        // Create editor
         editor = monaco.editor.create(document.getElementById('editor'), {
-          value: '// Select a demo from the dropdown...',
+          value: `// Vanilla demo\n// Type and then record & play back.\nfunction hello(name) {\n  console.log('Hello, ' + name)\n}\n`,
           language: 'javascript',
           theme: 'vs-dark',
           automaticLayout: true,
-          minimap: { enabled: false }
         });
 
-        // Initialize recorder
-        const { createMonacoRecorder } = await import('../monaco-recorder.js');
         recorder = createMonacoRecorder(editor, monaco);
+        // Expose for quick debugging/inspection
+        window.recorder = recorder;
+        wireUI();
+      }
+      window.initDemo = initDemo;
 
-        // Setup UI handlers
-        const demoSelect = document.getElementById('demoSelect');
-        const playBtn = document.getElementById('playBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const speedSelect = document.getElementById('speedSelect');
+      function $(id) { return document.getElementById(id); }
 
-        demoSelect.addEventListener('change', async (e) => {
-          const demo = e.target.value;
-          if (!demo) return;
-          
-          try {
-            // Load code
-            const codeResponse = await fetch(`../recordings/samples/${demo}.${demo === 'react' ? 'jsx' : 'ts'}`);
-            const code = await codeResponse.text();
-            
-            // Update editor
-            const model = monaco.editor.createModel(code, demo === 'react' ? 'javascript' : 'typescript');
-            editor.setModel(model);
-            
-            // Load recording
-            const recordingResponse = await fetch(`../recordings/samples/${demo}.json`);
-            recording = await recordingResponse.json();
-            
-            // Enable play
-            playBtn.disabled = false;
-            stopBtn.disabled = true;
-          } catch (err) {
-            console.error('Failed to load demo:', err);
-          }
-        });
+      function setStatus(text) { $('status').textContent = text; }
 
-        playBtn.addEventListener('click', () => {
-          if (isPlaying) {
-            recorder.stopPlayback();
-            isPlaying = false;
-            playBtn.textContent = '▶ Play';
+      function wireUI() {
+        $('recordBtn').disabled = false;
+        $('importBtn').disabled = false;
+
+        $('recordBtn').addEventListener('click', () => {
+          if (!recordingActive) {
+            recorder.start();
+            recordingActive = true;
+            $('recordBtn').textContent = '⏹ Stop Recording';
+            setStatus('Recording...');
+            $('playBtn').disabled = true;
           } else {
-            recorder.play(recording.events, {
-              speed: (parseInt(speedSelect.value, 10) || 100) / 100,
-              minDelayMs: 0,
-              maxDelayMs: 1000,
-              onDone: () => {
-                isPlaying = false;
-                playBtn.textContent = '▶ Play';
-                stopBtn.disabled = true;
-              }
-            });
-            isPlaying = true;
-            playBtn.textContent = '⏸ Pause';
-            stopBtn.disabled = false;
+            recording = recorder.stop();
+            recordingActive = false;
+            $('recordBtn').textContent = '⏺ Start Recording';
+            setStatus(`Recorded ${recording.length} events`);
+            $('playBtn').disabled = recording.length === 0;
+            $('exportBtn').disabled = recording.length === 0;
           }
         });
 
-        stopBtn.addEventListener('click', () => {
-          recorder.stopPlayback();
-          isPlaying = false;
-          playBtn.textContent = '▶ Play';
-          stopBtn.disabled = true;
+        $('playBtn').addEventListener('click', () => {
+          if (!recording || !recording.length) return;
+          const speed = clampInt($('speed').value, 10, 1000, 200);
+          const minDelayMs = clampInt($('minDelay').value, 0, 60000, 0);
+          const maxDelayMs = clampInt($('maxDelay').value, 0, 60000, 1000);
+          setStatus('Playing...');
+          recorder.play(recording, {
+            speed,
+            minDelayMs,
+            maxDelayMs,
+            onProgress: (i, total) => setStatus(`Playing ${i}/${total}`),
+            onDone: () => setStatus('Idle'),
+          });
         });
+
+        $('exportBtn').addEventListener('click', () => {
+          if (recording.length === 0) return;
+          const json = serializeEvents(recording);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `recording-${Date.now()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          setStatus('Exported recording');
+        });
+
+        $('importBtn').addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'application/json';
+          input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const newRecording = deserializeEvents(e.target.result);
+                if (newRecording.length > 0) {
+                  recording = newRecording;
+                  setStatus(`Imported ${recording.length} events`);
+                  $('playBtn').disabled = false;
+                  $('exportBtn').disabled = false;
+                } else {
+                  setStatus('Import failed: Invalid format');
+                }
+              } catch (err) {
+                console.error(err);
+                setStatus('Import failed: Invalid JSON');
+              }
+            };
+            reader.readAsText(file);
+          };
+          input.click();
+        });
+      }
+
+      function clampInt(v, min, max, fallback) {
+        const n = (v === '' || v === null || v === undefined) ? NaN : Number(v);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.min(max, Math.max(min, Math.floor(n)));
       }
 
       // Expose init for AMD callback
       window.initDemo = initDemo;
     </script>
   </body>
-</html>
+  <\/html>
