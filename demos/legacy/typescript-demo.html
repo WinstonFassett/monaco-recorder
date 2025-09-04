@@ -19,12 +19,23 @@
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js';
       script.onload = () => {
+        // Configure AMD paths
         window.require.config({ 
           paths: { 
             vs: 'https://unpkg.com/monaco-editor@0.45.0/min/vs',
             'vs/language/typescript': 'https://unpkg.com/monaco-editor@0.45.0/min/vs/language/typescript'
           }
         });
+        // Ensure workers resolve correctly
+        window.MonacoEnvironment = {
+          getWorkerUrl: function(moduleId, label) {
+            const base = 'https://unpkg.com/monaco-editor@0.45.0/min/vs';
+            if (label === 'typescript' || label === 'javascript') {
+              return `${base}/language/typescript/ts.worker.js`;
+            }
+            return `${base}/base/worker/workerMain.js`;
+          }
+        };
         window.require(['vs/editor/editor.main'], () => {
           // Monaco is now loaded and available globally
           window.monacoLoaded = true;
@@ -37,10 +48,16 @@
   </head>
   <body>
     <div id="toolbar">
-      <div class="btn-group">
+      <div class="controls">
         <button id="recordBtn" disabled>⏺ Start Recording</button>
         <button id="playBtn" disabled>▶ Play</button>
+        <button id="stopBtn" disabled>⏹ Stop</button>
         <button id="exportBtn" disabled>💾 Export</button>
+        <div class="playback-controls">
+          <label>Speed: <input id="speedRange" type="range" min="10" max="400" value="100"></label>
+          <span id="speedValue">1.0x</span>
+          <label>Threshold: <input type="number" id="thresholdInput" value="1000" min="0" max="5000" step="100"></label>
+        </div>
       </div>
       <div class="demo-selector">
         <select id="demoSelect">
@@ -50,10 +67,7 @@
           <option value="refactoring">Refactoring</option>
         </select>
       </div>
-      <div>
-        <label>Speed: <input id="speed" type="range" min="10" max="500" value="200"></label>
-        <span id="speedValue">2.0x</span>
-      </div>
+      
     </div>
     <div id="editor"></div>
 
@@ -63,6 +77,8 @@
       let editor = null;
       let recorder = null;
       let isRecording = false;
+      let isPlaying = false;
+      let loadedEvents = null; // events loaded from recordings/samples
       
       // Wait for Monaco to be loaded and initialize the editor
       document.addEventListener('monaco-loaded', () => {
@@ -182,17 +198,24 @@ function greet(name) {
       };
 
       function setupEditor() {
-        // Create editor
+        // Create a TS model with a .ts URI so TS-specific syntax works
+        const initial = '// Select a demo from the dropdown above\n';
+        const model = window.monaco.editor.createModel(
+          initial,
+          'typescript',
+          window.monaco.Uri.parse('file:///demo.ts')
+        );
+
+        // Create editor with the model
         editor = window.monaco.editor.create(document.getElementById('editor'), {
-          value: '// Select a demo from the dropdown above\n',
-          language: 'typescript',
+          model,
           theme: 'vs-dark',
           minimap: { enabled: true },
           automaticLayout: true
         });
 
         // Initialize recorder
-        recorder = createMonacoRecorder(editor, {
+        recorder = createMonacoRecorder(editor, window.monaco, {
           onStart: () => {
             isRecording = true;
             updateUI();
@@ -208,77 +231,144 @@ function greet(name) {
       }
 
       function setupUI() {
-        const recordBtn = document.getElementById('recordBtn');
-        const playBtn = document.getElementById('playBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const demoSelect = document.getElementById('demoSelect');
-        const speedInput = document.getElementById('speed');
-        const speedValue = document.getElementById('speedValue');
+const recordBtn = document.getElementById('recordBtn');
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const exportBtn = document.getElementById('exportBtn');
+const demoSelect = document.getElementById('demoSelect');
+const speedRange = document.getElementById('speedRange');
+const speedValue = document.getElementById('speedValue');
+const thresholdInput = document.getElementById('thresholdInput');
 
-        // Enable buttons
-        recordBtn.disabled = false;
-        playBtn.disabled = false;
-        exportBtn.disabled = false;
-        demoSelect.disabled = false;
+// Enable buttons
+recordBtn.disabled = false;
+playBtn.disabled = true;
+stopBtn.disabled = true;
+exportBtn.disabled = true;
+demoSelect.disabled = false;
 
-        // Event listeners
-        recordBtn.addEventListener('click', () => {
-          if (isRecording) {
-            recorder.stop();
-            recordBtn.textContent = '⏺ Start Recording';
-          } else {
-            recorder.start();
-            recordBtn.textContent = '⏹ Stop Recording';
-          }
-        });
+// Event listeners
+recordBtn.addEventListener('click', () => {
+if (isRecording) {
+recorder.stop();
+recordBtn.textContent = '⏺ Start Recording';
+} else {
+recorder.start();
+recordBtn.textContent = '⏹ Stop Recording';
+}
+updateUI();
+});
 
-        playBtn.addEventListener('click', async () => {
-          const speed = parseInt(speedInput.value) / 100;
-          await recorder.play({ speed });
-        });
+playBtn.addEventListener('click', () => {
+if (isPlaying) {
+recorder.stopPlayback();
+isPlaying = false;
+updateUI();
+return;
+}
+const speed = (parseInt(speedRange.value, 10) || 100) / 100;
+const threshold = parseInt(thresholdInput.value) || 1000;
+isPlaying = true;
+updateUI();
+const events = (loadedEvents && loadedEvents.length) ? loadedEvents : undefined;
+recorder.play(events, {
+speed,
+minDelayMs: 0,
+maxDelayMs: threshold,
+onDone: () => {
+isPlaying = false;
+updateUI();
+}
+});
+});
 
-        exportBtn.addEventListener('click', () => {
-          const events = recorder.getEvents();
-          const serialized = serializeEvents(events);
-          const blob = new Blob([serialized], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'monaco-recording.json';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        });
+stopBtn.addEventListener('click', () => {
+recorder.stopPlayback();
+// Ensure local state reflects stop
+isPlaying = false;
+updateUI();
+});
 
-        demoSelect.addEventListener('change', (e) => {
+exportBtn.addEventListener('click', () => {
+const events = recorder.getEvents();
+if (!events || events.length === 0) return;
+const serialized = serializeEvents(events);
+const blob = new Blob([serialized], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'monaco-recording.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+});
+
+        demoSelect.addEventListener('change', async (e) => {
           const demo = e.target.value;
+          loadedEvents = null;
           if (demo && demos[demo]) {
             editor.setValue(demos[demo]);
           }
+          // Attempt to load a matching recording file
+          try {
+            let file = null;
+            if (demo === 'typescript') file = '../recordings/samples/typescript.json';
+            else if (demo === 'jsx' || demo === 'react') file = '../recordings/samples/react.json';
+            // 'refactoring' does not have a sample; leave loadedEvents null
+            if (file) {
+              const res = await fetch(file);
+              if (res.ok) {
+                const json = await res.json();
+                // Support both raw array and {events}
+                loadedEvents = Array.isArray(json) ? json : (json.events || null);
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to load sample recording:', err);
+            loadedEvents = null;
+          }
+          updateUI();
         });
 
-        speedInput.addEventListener('input', (e) => {
-          const speed = parseInt(e.target.value) / 100;
-          speedValue.textContent = speed.toFixed(1) + 'x';
+        // Slider updates display
+        speedRange.addEventListener('input', () => {
+          const s = (parseInt(speedRange.value, 10) || 100) / 100;
+          speedValue.textContent = `${s.toFixed(1)}x`;
         });
 
         // Initial UI state
+        const sInit = (parseInt(speedRange.value, 10) || 100) / 100;
+        speedValue.textContent = `${sInit.toFixed(1)}x`;
         updateUI();
       }
 
       function updateUI() {
         const recordBtn = document.getElementById('recordBtn');
         const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
         const exportBtn = document.getElementById('exportBtn');
+        const demoSelect = document.getElementById('demoSelect');
+        const speedRange = document.getElementById('speedRange');
+        const speedValue = document.getElementById('speedValue');
+        const thresholdInput = document.getElementById('thresholdInput');
         
         if (!recorder) return;
         
-        const hasEvents = recorder.getEvents().length > 0;
-        playBtn.disabled = isRecording || !hasEvents;
-        exportBtn.disabled = isRecording || !hasEvents;
-        recordBtn.disabled = isRecording && recorder.isPlaying();
+        const hasEvents = (recorder.getEvents().length > 0) || (loadedEvents && loadedEvents.length > 0);
+        const playing = isPlaying;
+
+        // Enable/disable per state
+        recordBtn.disabled = playing;
+        playBtn.disabled = isRecording || (!hasEvents && !playing);
+        stopBtn.disabled = !playing;
+        exportBtn.disabled = isRecording || playing || !hasEvents;
+        demoSelect.disabled = playing || isRecording;
+        speedRange.disabled = playing;
+        thresholdInput.disabled = playing;
+
+        // Set play label
+        playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
       }
     </script>
   </body>

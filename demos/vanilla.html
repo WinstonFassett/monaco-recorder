@@ -129,7 +129,7 @@
             playBtn.textContent = '▶ Play';
           } else {
             recorder.play(recording.events, {
-              speed: parseFloat(speedSelect.value),
+              speed: (parseInt(speedSelect.value, 10) || 100) / 100,
               minDelayMs: 0,
               maxDelayMs: 1000,
               onDone: () => {
@@ -150,55 +150,6 @@
           playBtn.textContent = '▶ Play';
           stopBtn.disabled = true;
         });
-            // Load recording
-            const recordingResponse = await fetch(`../recordings/samples/${demo}.json`);
-            recording = await recordingResponse.json();
-            
-            // Enable play
-            $('playBtn').disabled = false;
-            $('stopBtn').disabled = true;
-          } catch (err) {
-            console.error('Failed to load demo:', err);
-          }
-        });
-      }
-      window.initDemo = initDemo;
-
-        const importBtn = document.getElementById('importBtn');
-        importBtn.addEventListener('click', () => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'application/json';
-          input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const newRecording = deserializeEvents(e.target.result);
-                if (newRecording.length > 0) {
-                  recording = newRecording;
-                  setStatus(`Imported ${recording.length} events`);
-                  $('playBtn').disabled = false;
-                  $('exportBtn').disabled = false;
-                } else {
-                  setStatus('Import failed: Invalid format');
-                }
-              } catch (err) {
-                console.error(err);
-                setStatus('Import failed: Invalid JSON');
-              }
-            };
-            reader.readAsText(file);
-          };
-          input.click();
-        });
-      }
-
-      function clampInt(v, min, max, fallback) {
-        const n = (v === '' || v === null || v === undefined) ? NaN : Number(v);
-        if (!Number.isFinite(n)) return fallback;
-        return Math.min(max, Math.max(min, Math.floor(n)));
       }
 
       // Expose init for AMD callback
