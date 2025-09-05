@@ -144,6 +144,11 @@
 
     <h2>Interactive Demos</h2>
     <div class="demo-grid">
+      <a href="demos/recorder.html" class="demo-card">
+        <h3>Unified Recorder (JS/TS) <span class="badge">Record & Play</span></h3>
+        <p>Single page to record and playback in JavaScript or TypeScript. Includes Play/Pause, Stop, Speed slider, Threshold, and Import/Export.</p>
+      </a>
+
       <a href="demos/vanilla.html" class="demo-card">
         <h3>Vanilla JavaScript <span class="badge">Basic</span></h3>
         <p>Pure JavaScript implementation showing the core recording and playback functionality. Perfect for understanding the basics.</p>
@@ -191,6 +196,11 @@ recorder.play(events);</code></pre>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
     <script type="module">
+      const playConfig = {
+        speed: 3,
+        minDelayMs: 0,
+        maxDelayMs: 400
+      };
       require.config({ 
         paths: { 
           vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'
@@ -328,6 +338,7 @@ recorder.play(events);</code></pre>
             tab.classList.toggle('active', tab.dataset.demo === demoId);
           });
           recorder.play(recording, {
+            ...playConfig,
             onDone: () => {
               playBtn.disabled = false;
               pauseBtn.disabled = true;
@@ -351,6 +362,7 @@ recorder.play(events);</code></pre>
       playBtn.addEventListener('click', () => {
         if (!currentRecording) return;
         recorder.play(currentRecording, {
+          ...playConfig,
           onDone: () => {
             playBtn.disabled = false;
             pauseBtn.disabled = true;

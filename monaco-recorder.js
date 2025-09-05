@@ -375,25 +375,25 @@ export function createMonacoRecorder(editor, monaco, options = {}) {
     if (!list.length) return;
 
     const {
-      speed = 200,
+      // Treat speed as a multiplier: 1 = normal, 2 = twice as fast, 0.5 = half speed
+      speed = 1,
       minDelayMs = 0,
       maxDelayMs = 1000,
       onProgress = null,
       onDone = null,
     } = playOpts;
 
-    const scaleDelay = (ms) => {
-      const scaled = ms * (100 / Math.max(1, speed));
-      return Math.min(Math.max(scaled, minDelayMs), maxDelayMs);
-    };
+    const factor = 1 / Math.max(0.1, speed);
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+    const scaleDelay = (ms) => clamp(ms * factor, minDelayMs, maxDelayMs);
     const waitFor = async (condFn, timeout = 300, poll = 10) => {
       const start = Date.now();
-      const budget = Math.min(maxDelayMs, Math.max(minDelayMs, timeout * (100 / Math.max(1, speed))));
+      const budget = clamp(timeout * factor, minDelayMs, maxDelayMs);
       if (budget === 0) return !!condFn();
       while (Date.now() - start < budget) {
         if (!playing) return false;
         if (condFn()) return true;
-        await sleep(Math.min(maxDelayMs, Math.max(minDelayMs, poll * (100 / Math.max(1, speed)))));
+        await sleep(clamp(poll * factor, minDelayMs, maxDelayMs));
       }
       return !!condFn();
     };
