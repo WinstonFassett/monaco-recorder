@@ -1,0 +1,34 @@
+[
+  {
+    "type": "content",
+    "timestamp": 0,
+    "content": "// React Integration Example\nimport { useEffect, useRef } from 'react';\nimport * as monaco from 'monaco-editor';\nimport { createMonacoRecorder } from 'monaco-recorder';\n\nfunction EditorWithRecorder() {\n  const editorRef = useRef(null);\n  const recorderRef = useRef(null);\n  \n  useEffect(() => {\n    // Initialize editor\n    const editor = monaco.editor.create(\n      editorRef.current,\n      { value: '// Start coding...\\n' }\n    );\n    \n    // Initialize recorder\n    recorderRef.current = createMonacoRecorder(editor);\n    \n    return () => editor.dispose();\n  }, []);\n  \n  return (\n    <div>\n      <div ref={editorRef} style={{ height: '300px' }} />\n      <button onClick={() => recorderRef.current.start()}>\n        Start Recording\n      </button>\n    </div>\n  );\n}"
+  },
+  {
+    "type": "typing",
+    "timestamp": 1000,
+    "text": "\n\n// Let's add some state to track recording\nconst [isRecording, setIsRecording] = useState(false);\n\n// Update the button click handler\nconst handleRecordClick = () => {\n  if (isRecording) {\n    recorderRef.current.stop();\n  } else {\n    recorderRef.current.start();\n  }\n  setIsRecording(!isRecording);\n};\n\n// Update the button in JSX\n<button onClick={handleRecordClick}>\n  {isRecording ? 'Stop Recording' : 'Start Recording'}\n</button>",
+    "position": {
+      "lineNumber": 30,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 2000,
+    "text": "\n\n// Add a play button\nconst handlePlay = async () => {\n  try {\n    await recorderRef.current.play();\n  } catch (error) {\n    console.error('Playback failed:', error);\n  }\n};\n\n// Add the play button to JSX\n<button onClick={handlePlay} disabled={isRecording}>\n  Play Recording\n</button>",
+    "position": {
+      "lineNumber": 45,
+      "column": 1
+    }
+  },
+  {
+    "type": "typing",
+    "timestamp": 3000,
+    "text": "\n\n// Add some styling\nconst styles = {\n  container: {\n    display: 'flex',\n    flexDirection: 'column',\n    gap: '1rem',\n    padding: '1rem'\n  },\n  button: {\n    padding: '0.5rem 1rem',\n    marginRight: '0.5rem',\n    cursor: 'pointer'\n  },\n  editor: {\n    border: '1px solid #ccc',\n    borderRadius: '4px'\n  }\n};\n\n// Update the return statement\nreturn (\n  <div style={styles.container}>\n    <div style={styles.editor} ref={editorRef} />\n    <div>\n      <button\n        style={{ ...styles.button, background: isRecording ? '#ff4444' : '#4CAF50' }}\n        onClick={handleRecordClick}\n      >\n        {isRecording ? '⏹ Stop Recording' : '⏺ Start Recording'}\n      </button>\n      <button\n        style={styles.button}\n        onClick={handlePlay}\n        disabled={isRecording}\n      >\n        ▶ Play Recording\n      </button>\n    </div>\n  </div>\n);",
+    "position": {
+      "lineNumber": 55,
+      "column": 1
+    }
+  }
+]

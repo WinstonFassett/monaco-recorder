@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unified Recorder (JS / TS)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+    <style>
+      html, body { height: 100%; margin: 0; background: #1e1e1e; color: #f0f0f0; }
+      .wrap { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+      .toolbar { display: flex; gap: 10px; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
+      #editor { height: 100%; }
+      button { background: #4a90e2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+      button:disabled { background: #2a2a2a; color: #777; cursor: not-allowed; }
+      select, input[type="number"] { background: #2a2a2a; color: #f0f0f0; border: 1px solid #444; border-radius: 4px; padding: 6px; }
+      .spacer { flex: 1; }
+      .speed { display: inline-flex; gap: 8px; align-items: center; }
+      .speed input[type=range] { width: 160px; }
+      .small { color: #bbb; font-size: 12px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <script>
+      require.config({ 
+        paths: { 
+          vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'
+        }
+      });
+
+      window.MonacoEnvironment = {
+        getWorkerUrl: function(moduleId, label) {
+          const base = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs';
+          if (label === 'typescript' || label === 'javascript') {
+            return `${base}/language/typescript/ts.worker.js`;
+          }
+          return `${base}/base/worker/workerMain.js`;
+        }
+      };
+
+      // Ensure TypeScript worker is loaded
+      const tsWorkerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/language/typescript/ts.worker.js';
+      const script = document.createElement('script');
+      script.src = tsWorkerUrl;
+      document.head.appendChild(script);
+
+      // Load Monaco
+      require(['vs/editor/editor.main'], function() {
+        window.monacoLoaded = true;
+        window.dispatchEvent(new Event('monaco-ready'));
+      });
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="toolbar">
+        <label>Language
+          <select id="lang">
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+          </select>
+        </label>
+        <button id="recordBtn" disabled>⏺ Start Recording</button>
+        <button id="playBtn" disabled>▶ Play</button>
+        <button id="stopBtn" disabled>⏹ Stop</button>
+        <button id="exportBtn" disabled>💾 Export</button>
+        <button id="importBtn">📥 Import</button>
+        <div class="spacer"></div>
+        <div class="speed">
+          <label>Speed <input id="speedRange" type="range" min="10" max="400" value="100"></label>
+          <span id="speedValue">1.0x</span>
+          <label>Threshold <input id="thresholdInput" type="number" value="1000" min="0" max="5000" step="100"></label>
+        </div>
+      </div>
+      <div id="editor"></div>
+    </div>
+
+    <script type="module">
+      import { createMonacoRecorder, serializeEvents, deserializeEvents } from '../monaco-recorder.js';
+
+      let editor = null;
+      let recorder = null;
+      let isRecording = false;
+      let isPlaying = false;
+      let currentEvents = [];
+
+      // Wait for Monaco to be loaded
+      window.addEventListener('monaco-ready', init);
+      
+      // If Monaco is already loaded, initialize
+      if (window.monacoLoaded) {
+        window.dispatchEvent(new Event('monaco-ready'));
+      }
+
+      async function init() {
+        const langSel = document.getElementById('lang');
+        const recordBtn = document.getElementById('recordBtn');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const speedRange = document.getElementById('speedRange');
+        const speedValue = document.getElementById('speedValue');
+        const thresholdInput = document.getElementById('thresholdInput');
+
+        const monaco = window.monaco;
+
+        function createModelForLang(language) {
+          const uri = monaco.Uri.parse(`file:///demo.${language === 'typescript' ? 'ts' : 'js'}`);
+          const initial = language === 'typescript' ? '// TypeScript demo\n' : '// JavaScript demo\n';
+          const model = monaco.editor.createModel(initial, language, uri);
+          return model;
+        }
+
+        function mountEditor(language) {
+          if (editor) {
+            const old = editor.getModel();
+            if (old) old.dispose();
+          }
+          const model = createModelForLang(language);
+          if (!editor) {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+              model,
+              theme: 'vs-dark',
+              automaticLayout: true,
+              minimap: { enabled: true }
+            });
+          } else {
+            editor.setModel(model);
+          }
+        }
+
+        // Configure TypeScript
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+          target: monaco.languages.typescript.ScriptTarget.ESNext,
+          module: monaco.languages.typescript.ModuleKind.ESNext,
+          moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+          allowJs: true,
+          allowNonTsExtensions: true,
+          allowSyntheticDefaultImports: true,
+          noEmit: true,
+          lib: ['esnext', 'dom'],
+          typeRoots: ['file:///node_modules/@types']
+        });
+
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+          noSemanticValidation: false,
+          noSyntaxValidation: false,
+          noSuggestionDiagnostics: false,
+          diagnosticCodesToIgnore: [8006]
+        });
+
+        // Add basic TypeScript types
+        monaco.languages.typescript.typescriptDefaults.addExtraLib(
+          'declare module "*.ts" { const content: any; export default content; }',
+          'file:///ambient.d.ts'
+        );
+
+        mountEditor(langSel.value);
+        recorder = createMonacoRecorder(editor, monaco, {
+          onStart: () => { isRecording = true; updateUI(); },
+          onStop: () => { isRecording = false; updateUI(); }
+        });
+
+        // UI handlers
+        langSel.addEventListener('change', () => {
+          if (isPlaying || isRecording) return; // lock during activity
+          mountEditor(langSel.value);
+          currentEvents = [];
+          updateUI();
+        });
+
+        recordBtn.disabled = false;
+        recordBtn.addEventListener('click', async () => {
+          if (isRecording) {
+            currentEvents = await recorder.stop();
+            isRecording = false;
+            recordBtn.textContent = '⏺ Start Recording';
+          } else {
+            await recorder.start();
+            isRecording = true;
+            recordBtn.textContent = '⏹ Stop Recording';
+          }
+          updateUI();
+        });
+
+        playBtn.addEventListener('click', () => {
+          if (isPlaying) {
+            recorder.stopPlayback();
+            isPlaying = false;
+            updateUI();
+            return;
+          }
+          if (!currentEvents || currentEvents.length === 0) return;
+          const speed = (parseInt(speedRange.value, 10) || 100) / 100;
+          const threshold = parseInt(thresholdInput.value) || 1000;
+          isPlaying = true;
+          updateUI();
+          recorder.play(currentEvents, {
+            speed,
+            minDelayMs: 0,
+            maxDelayMs: threshold,
+            onDone: () => { isPlaying = false; updateUI(); }
+          });
+        });
+
+        stopBtn.addEventListener('click', () => {
+          if (isPlaying) {
+            recorder.stopPlayback();
+            isPlaying = false;
+          }
+          if (isRecording) {
+            recorder.stop();
+            isRecording = false;
+            recordBtn.textContent = '⏺ Start Recording';
+          }
+          updateUI();
+        });
+
+        exportBtn.addEventListener('click', () => {
+          if (!currentEvents || currentEvents.length === 0) return;
+          const json = serializeEvents(currentEvents);
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `recording-${Date.now()}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+
+        importBtn.addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'application/json';
+          input.onchange = (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              try {
+                const events = deserializeEvents(ev.target.result);
+                if (Array.isArray(events) && events.length > 0) {
+                  currentEvents = events;
+                  updateUI();
+                }
+              } catch {}
+            };
+            reader.readAsText(file);
+          };
+          input.click();
+        });
+
+        speedRange.addEventListener('input', () => {
+          const s = (parseInt(speedRange.value, 10) || 100) / 100;
+          speedValue.textContent = `${s.toFixed(1)}x`;
+        });
+        speedValue.textContent = `${((parseInt(speedRange.value, 10)||100)/100).toFixed(1)}x`;
+
+        function updateUI() {
+          const hasEvents = currentEvents && currentEvents.length > 0;
+          recordBtn.disabled = isPlaying; // record locked while playing
+          playBtn.disabled = isRecording || (!hasEvents && !isPlaying);
+          stopBtn.disabled = !isPlaying && !isRecording;
+          exportBtn.disabled = isRecording || isPlaying || !hasEvents;
+          langSel.disabled = isRecording || isPlaying;
+          speedRange.disabled = isPlaying;
+          thresholdInput.disabled = isPlaying;
+          playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+        }
+
+        // Initial state
+        updateUI();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,4649 @@
+[
+  {
+    "type": "initialState",
+    "content": "// TypeScript demo\n",
+    "position": {
+      "lineNumber": 1,
+      "column": 1
+    },
+    "selection": {
+      "startLineNumber": 1,
+      "startColumn": 1,
+      "endLineNumber": 1,
+      "endColumn": 1
+    },
+    "timestamp": 0
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 1,
+      "endLineNumber": 2,
+      "endColumn": 1
+    },
+    "timestamp": 437
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 1,
+          "endLineNumber": 2,
+          "endColumn": 1
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 2,
+    "duringSuggest": false,
+    "timestamp": 1120
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 2,
+      "endLineNumber": 2,
+      "endColumn": 2
+    },
+    "timestamp": 1120
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 1161
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 2,
+          "endLineNumber": 2,
+          "endColumn": 2
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 3,
+    "duringSuggest": false,
+    "timestamp": 1180
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 3,
+      "endLineNumber": 2,
+      "endColumn": 3
+    },
+    "timestamp": 1180
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 3,
+          "endLineNumber": 2,
+          "endColumn": 3
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 4,
+    "duringSuggest": false,
+    "timestamp": 1271
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 4,
+      "endLineNumber": 2,
+      "endColumn": 4
+    },
+    "timestamp": 1271
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 4,
+          "endLineNumber": 2,
+          "endColumn": 4
+        },
+        "text": "e"
+      }
+    ],
+    "versionId": 5,
+    "duringSuggest": false,
+    "timestamp": 1336
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 5,
+      "endLineNumber": 2,
+      "endColumn": 5
+    },
+    "timestamp": 1336
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 5,
+          "endLineNumber": 2,
+          "endColumn": 5
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 6,
+    "duringSuggest": false,
+    "timestamp": 1446
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 6,
+      "endLineNumber": 2,
+      "endColumn": 6
+    },
+    "timestamp": 1446
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 6,
+          "endLineNumber": 2,
+          "endColumn": 6
+        },
+        "text": "f"
+      }
+    ],
+    "versionId": 7,
+    "duringSuggest": false,
+    "timestamp": 1649
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 7,
+      "endLineNumber": 2,
+      "endColumn": 7
+    },
+    "timestamp": 1649
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 7,
+          "endLineNumber": 2,
+          "endColumn": 7
+        },
+        "text": "a"
+      }
+    ],
+    "versionId": 8,
+    "duringSuggest": false,
+    "timestamp": 1805
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 8,
+      "endLineNumber": 2,
+      "endColumn": 8
+    },
+    "timestamp": 1805
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 8,
+          "endLineNumber": 2,
+          "endColumn": 8
+        },
+        "text": "c"
+      }
+    ],
+    "versionId": 9,
+    "duringSuggest": false,
+    "timestamp": 1933
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 9,
+      "endLineNumber": 2,
+      "endColumn": 9
+    },
+    "timestamp": 1933
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 9,
+          "endLineNumber": 2,
+          "endColumn": 9
+        },
+        "text": "e"
+      }
+    ],
+    "versionId": 10,
+    "duringSuggest": false,
+    "timestamp": 2023
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 10,
+      "endLineNumber": 2,
+      "endColumn": 10
+    },
+    "timestamp": 2023
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 10,
+          "endLineNumber": 2,
+          "endColumn": 10
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 11,
+    "duringSuggest": false,
+    "timestamp": 2197
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 11,
+      "endLineNumber": 2,
+      "endColumn": 11
+    },
+    "timestamp": 2197
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 2198
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 11,
+          "endLineNumber": 2,
+          "endColumn": 11
+        },
+        "text": "U"
+      }
+    ],
+    "versionId": 12,
+    "duringSuggest": false,
+    "timestamp": 2426
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 12,
+      "endLineNumber": 2,
+      "endColumn": 12
+    },
+    "timestamp": 2426
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 12,
+          "endLineNumber": 2,
+          "endColumn": 12
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 13,
+    "duringSuggest": false,
+    "timestamp": 2570
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 13,
+      "endLineNumber": 2,
+      "endColumn": 13
+    },
+    "timestamp": 2570
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 13,
+          "endLineNumber": 2,
+          "endColumn": 13
+        },
+        "text": "e"
+      }
+    ],
+    "versionId": 14,
+    "duringSuggest": false,
+    "timestamp": 2644
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 14,
+      "endLineNumber": 2,
+      "endColumn": 14
+    },
+    "timestamp": 2644
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 14,
+          "endLineNumber": 2,
+          "endColumn": 14
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 15,
+    "duringSuggest": false,
+    "timestamp": 2767
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 15,
+      "endLineNumber": 2,
+      "endColumn": 15
+    },
+    "timestamp": 2768
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 15,
+          "endLineNumber": 2,
+          "endColumn": 15
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 16,
+    "duringSuggest": false,
+    "timestamp": 2905
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 16,
+      "endLineNumber": 2,
+      "endColumn": 16
+    },
+    "timestamp": 2905
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 16,
+          "endLineNumber": 2,
+          "endColumn": 16
+        },
+        "text": "{}"
+      }
+    ],
+    "versionId": 17,
+    "duringSuggest": false,
+    "timestamp": 3123
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 17,
+      "endLineNumber": 2,
+      "endColumn": 17
+    },
+    "timestamp": 3123
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 2,
+          "startColumn": 17,
+          "endLineNumber": 2,
+          "endColumn": 17
+        },
+        "text": "\n    \n"
+      }
+    ],
+    "versionId": 18,
+    "duringSuggest": false,
+    "timestamp": 3368
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 5,
+      "endLineNumber": 3,
+      "endColumn": 5
+    },
+    "timestamp": 3368
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 5,
+          "endLineNumber": 3,
+          "endColumn": 5
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 19,
+    "duringSuggest": false,
+    "timestamp": 4190
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 6,
+      "endLineNumber": 3,
+      "endColumn": 6
+    },
+    "timestamp": 4190
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 6,
+          "endLineNumber": 3,
+          "endColumn": 6
+        },
+        "text": "a"
+      }
+    ],
+    "versionId": 20,
+    "duringSuggest": false,
+    "timestamp": 4275
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 7,
+      "endLineNumber": 3,
+      "endColumn": 7
+    },
+    "timestamp": 4275
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 7,
+          "endLineNumber": 3,
+          "endColumn": 7
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 21,
+    "duringSuggest": false,
+    "timestamp": 4327
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 8,
+      "endLineNumber": 3,
+      "endColumn": 8
+    },
+    "timestamp": 4327
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 8,
+          "endLineNumber": 3,
+          "endColumn": 8
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 22,
+    "duringSuggest": false,
+    "timestamp": 4421
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 9,
+      "endLineNumber": 3,
+      "endColumn": 9
+    },
+    "timestamp": 4421
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 9,
+          "endLineNumber": 3,
+          "endColumn": 9
+        },
+        "text": ":"
+      }
+    ],
+    "versionId": 23,
+    "duringSuggest": false,
+    "timestamp": 4606
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 10,
+      "endLineNumber": 3,
+      "endColumn": 10
+    },
+    "timestamp": 4606
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 10,
+          "endLineNumber": 3,
+          "endColumn": 10
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 24,
+    "duringSuggest": false,
+    "timestamp": 4705
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 11,
+      "endLineNumber": 3,
+      "endColumn": 11
+    },
+    "timestamp": 4705
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 11,
+          "endLineNumber": 3,
+          "endColumn": 11
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 25,
+    "duringSuggest": false,
+    "timestamp": 5166
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 12,
+      "endLineNumber": 3,
+      "endColumn": 12
+    },
+    "timestamp": 5166
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 5194
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 12,
+          "endLineNumber": 3,
+          "endColumn": 12
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 26,
+    "duringSuggest": false,
+    "timestamp": 5337
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 13,
+      "endLineNumber": 3,
+      "endColumn": 13
+    },
+    "timestamp": 5337
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 11,
+          "endLineNumber": 3,
+          "endColumn": 13
+        },
+        "text": "string"
+      }
+    ],
+    "versionId": 27,
+    "duringSuggest": false,
+    "timestamp": 5617
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 17,
+      "endLineNumber": 3,
+      "endColumn": 17
+    },
+    "timestamp": 5617
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 5617
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 3,
+          "startColumn": 17,
+          "endLineNumber": 3,
+          "endColumn": 17
+        },
+        "text": "\n    "
+      }
+    ],
+    "versionId": 28,
+    "duringSuggest": false,
+    "timestamp": 6321
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 5,
+      "endLineNumber": 4,
+      "endColumn": 5
+    },
+    "timestamp": 6321
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 5,
+          "endLineNumber": 4,
+          "endColumn": 5
+        },
+        "text": "f"
+      }
+    ],
+    "versionId": 29,
+    "duringSuggest": false,
+    "timestamp": 6608
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 6,
+      "endLineNumber": 4,
+      "endColumn": 6
+    },
+    "timestamp": 6609
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 6,
+          "endLineNumber": 4,
+          "endColumn": 6
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 30,
+    "duringSuggest": false,
+    "timestamp": 6722
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 7,
+      "endLineNumber": 4,
+      "endColumn": 7
+    },
+    "timestamp": 6722
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 7,
+          "endLineNumber": 4,
+          "endColumn": 7
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 31,
+    "duringSuggest": false,
+    "timestamp": 6836
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 8,
+      "endLineNumber": 4,
+      "endColumn": 8
+    },
+    "timestamp": 6836
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 8,
+          "endLineNumber": 4,
+          "endColumn": 8
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 32,
+    "duringSuggest": false,
+    "timestamp": 6900
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 9,
+      "endLineNumber": 4,
+      "endColumn": 9
+    },
+    "timestamp": 6900
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 9,
+          "endLineNumber": 4,
+          "endColumn": 9
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 33,
+    "duringSuggest": false,
+    "timestamp": 7044
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 10,
+      "endLineNumber": 4,
+      "endColumn": 10
+    },
+    "timestamp": 7044
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 10,
+          "endLineNumber": 4,
+          "endColumn": 10
+        },
+        "text": ":"
+      }
+    ],
+    "versionId": 34,
+    "duringSuggest": false,
+    "timestamp": 7349
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 11,
+      "endLineNumber": 4,
+      "endColumn": 11
+    },
+    "timestamp": 7349
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 11,
+          "endLineNumber": 4,
+          "endColumn": 11
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 35,
+    "duringSuggest": false,
+    "timestamp": 7457
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 12,
+      "endLineNumber": 4,
+      "endColumn": 12
+    },
+    "timestamp": 7457
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 12,
+          "endLineNumber": 4,
+          "endColumn": 12
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 36,
+    "duringSuggest": false,
+    "timestamp": 7705
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 13,
+      "endLineNumber": 4,
+      "endColumn": 13
+    },
+    "timestamp": 7705
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 7735
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 13,
+          "endLineNumber": 4,
+          "endColumn": 13
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 37,
+    "duringSuggest": false,
+    "timestamp": 7891
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 14,
+      "endLineNumber": 4,
+      "endColumn": 14
+    },
+    "timestamp": 7891
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 14,
+          "endLineNumber": 4,
+          "endColumn": 14
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 38,
+    "duringSuggest": false,
+    "timestamp": 7945
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 15,
+      "endLineNumber": 4,
+      "endColumn": 15
+    },
+    "timestamp": 7945
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 4,
+          "startColumn": 12,
+          "endLineNumber": 4,
+          "endColumn": 15
+        },
+        "text": "string"
+      }
+    ],
+    "versionId": 39,
+    "duringSuggest": false,
+    "timestamp": 8263
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 18,
+      "endLineNumber": 4,
+      "endColumn": 18
+    },
+    "timestamp": 8263
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 8263
+  },
+  {
+    "type": "keyDown",
+    "key": "ArrowDown",
+    "code": "ArrowDown",
+    "ctrlKey": false,
+    "altKey": false,
+    "metaKey": false,
+    "shiftKey": false,
+    "category": "navigation",
+    "timestamp": 9146
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 5,
+      "startColumn": 2,
+      "endLineNumber": 5,
+      "endColumn": 2
+    },
+    "timestamp": 9148
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 5,
+          "startColumn": 2,
+          "endLineNumber": 5,
+          "endColumn": 2
+        },
+        "text": "\n"
+      }
+    ],
+    "versionId": 40,
+    "duringSuggest": false,
+    "timestamp": 9396
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 6,
+      "startColumn": 1,
+      "endLineNumber": 6,
+      "endColumn": 1
+    },
+    "timestamp": 9396
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 6,
+          "startColumn": 1,
+          "endLineNumber": 6,
+          "endColumn": 1
+        },
+        "text": "\n"
+      }
+    ],
+    "versionId": 41,
+    "duringSuggest": false,
+    "timestamp": 9533
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 1,
+      "endLineNumber": 7,
+      "endColumn": 1
+    },
+    "timestamp": 9534
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 1,
+          "endLineNumber": 7,
+          "endColumn": 1
+        },
+        "text": "c"
+      }
+    ],
+    "versionId": 42,
+    "duringSuggest": false,
+    "timestamp": 9690
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 2,
+      "endLineNumber": 7,
+      "endColumn": 2
+    },
+    "timestamp": 9690
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 9716
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 2,
+          "endLineNumber": 7,
+          "endColumn": 2
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 43,
+    "duringSuggest": false,
+    "timestamp": 9851
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 3,
+      "endLineNumber": 7,
+      "endColumn": 3
+    },
+    "timestamp": 9851
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 3,
+          "endLineNumber": 7,
+          "endColumn": 3
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 44,
+    "duringSuggest": false,
+    "timestamp": 10007
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 4,
+      "endLineNumber": 7,
+      "endColumn": 4
+    },
+    "timestamp": 10007
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 4,
+          "endLineNumber": 7,
+          "endColumn": 4
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 45,
+    "duringSuggest": false,
+    "timestamp": 10039
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 5,
+      "endLineNumber": 7,
+      "endColumn": 5
+    },
+    "timestamp": 10039
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 5,
+          "endLineNumber": 7,
+          "endColumn": 5
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 46,
+    "duringSuggest": false,
+    "timestamp": 10156
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 6,
+      "endLineNumber": 7,
+      "endColumn": 6
+    },
+    "timestamp": 10156
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 6,
+          "endLineNumber": 7,
+          "endColumn": 6
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 47,
+    "duringSuggest": false,
+    "timestamp": 10195
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 7,
+      "endLineNumber": 7,
+      "endColumn": 7
+    },
+    "timestamp": 10195
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 10196
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 7,
+          "endLineNumber": 7,
+          "endColumn": 7
+        },
+        "text": "u"
+      }
+    ],
+    "versionId": 48,
+    "duringSuggest": false,
+    "timestamp": 10731
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 8,
+      "endLineNumber": 7,
+      "endColumn": 8
+    },
+    "timestamp": 10732
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 10751
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 8,
+          "endLineNumber": 7,
+          "endColumn": 8
+        },
+        "text": ":"
+      }
+    ],
+    "versionId": 49,
+    "duringSuggest": false,
+    "timestamp": 10963
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 9,
+      "endLineNumber": 7,
+      "endColumn": 9
+    },
+    "timestamp": 10963
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 10964
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 9,
+          "endLineNumber": 7,
+          "endColumn": 9
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 50,
+    "duringSuggest": false,
+    "timestamp": 11113
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 10,
+      "endLineNumber": 7,
+      "endColumn": 10
+    },
+    "timestamp": 11113
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 10,
+          "endLineNumber": 7,
+          "endColumn": 10
+        },
+        "text": "U"
+      }
+    ],
+    "versionId": 51,
+    "duringSuggest": false,
+    "timestamp": 11363
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 11,
+      "endLineNumber": 7,
+      "endColumn": 11
+    },
+    "timestamp": 11363
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 11389
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 10,
+          "endLineNumber": 7,
+          "endColumn": 11
+        },
+        "text": "User"
+      }
+    ],
+    "versionId": 52,
+    "duringSuggest": false,
+    "timestamp": 12146
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 14,
+      "endLineNumber": 7,
+      "endColumn": 14
+    },
+    "timestamp": 12146
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 12146
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 14,
+          "endLineNumber": 7,
+          "endColumn": 14
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 53,
+    "duringSuggest": false,
+    "timestamp": 12695
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 15,
+      "endLineNumber": 7,
+      "endColumn": 15
+    },
+    "timestamp": 12695
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 15,
+          "endLineNumber": 7,
+          "endColumn": 15
+        },
+        "text": "="
+      }
+    ],
+    "versionId": 54,
+    "duringSuggest": false,
+    "timestamp": 12918
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 16,
+      "endLineNumber": 7,
+      "endColumn": 16
+    },
+    "timestamp": 12918
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 16,
+          "endLineNumber": 7,
+          "endColumn": 16
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 55,
+    "duringSuggest": false,
+    "timestamp": 13048
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 17,
+      "endLineNumber": 7,
+      "endColumn": 17
+    },
+    "timestamp": 13048
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 17,
+          "endLineNumber": 7,
+          "endColumn": 17
+        },
+        "text": "{}"
+      }
+    ],
+    "versionId": 56,
+    "duringSuggest": false,
+    "timestamp": 13660
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 18,
+      "endLineNumber": 7,
+      "endColumn": 18
+    },
+    "timestamp": 13660
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 7,
+          "startColumn": 18,
+          "endLineNumber": 7,
+          "endColumn": 18
+        },
+        "text": "\n    \n"
+      }
+    ],
+    "versionId": 57,
+    "duringSuggest": false,
+    "timestamp": 13880
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 5,
+      "endLineNumber": 8,
+      "endColumn": 5
+    },
+    "timestamp": 13881
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 5,
+          "endLineNumber": 8,
+          "endColumn": 5
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 58,
+    "duringSuggest": false,
+    "timestamp": 14707
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 6,
+      "endLineNumber": 8,
+      "endColumn": 6
+    },
+    "timestamp": 14708
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 14727
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 6,
+          "endLineNumber": 8,
+          "endColumn": 6
+        },
+        "text": "a"
+      }
+    ],
+    "versionId": 59,
+    "duringSuggest": false,
+    "timestamp": 14812
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 7,
+      "endLineNumber": 8,
+      "endColumn": 7
+    },
+    "timestamp": 14812
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 5,
+          "endLineNumber": 8,
+          "endColumn": 7
+        },
+        "text": "last"
+      }
+    ],
+    "versionId": 60,
+    "duringSuggest": false,
+    "timestamp": 15250
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 9,
+      "endLineNumber": 8,
+      "endColumn": 9
+    },
+    "timestamp": 15250
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 15250
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 9,
+          "endLineNumber": 8,
+          "endColumn": 9
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 61,
+    "duringSuggest": false,
+    "timestamp": 15799
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 10,
+      "endLineNumber": 8,
+      "endColumn": 10
+    },
+    "timestamp": 15799
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 9,
+          "endLineNumber": 8,
+          "endColumn": 10
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 62,
+    "duringSuggest": false,
+    "timestamp": 16191
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 9,
+      "endLineNumber": 8,
+      "endColumn": 9
+    },
+    "timestamp": 16191
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 9,
+          "endLineNumber": 8,
+          "endColumn": 9
+        },
+        "text": ":"
+      }
+    ],
+    "versionId": 63,
+    "duringSuggest": false,
+    "timestamp": 16547
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 10,
+      "endLineNumber": 8,
+      "endColumn": 10
+    },
+    "timestamp": 16547
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 10,
+          "endLineNumber": 8,
+          "endColumn": 10
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 64,
+    "duringSuggest": false,
+    "timestamp": 16690
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 11,
+      "endLineNumber": 8,
+      "endColumn": 11
+    },
+    "timestamp": 16690
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 11,
+          "endLineNumber": 8,
+          "endColumn": 11
+        },
+        "text": "\"\""
+      }
+    ],
+    "versionId": 65,
+    "duringSuggest": false,
+    "timestamp": 17039
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 12,
+      "endLineNumber": 8,
+      "endColumn": 12
+    },
+    "timestamp": 17039
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 12,
+          "endLineNumber": 8,
+          "endColumn": 12
+        },
+        "text": "f"
+      }
+    ],
+    "versionId": 66,
+    "duringSuggest": false,
+    "timestamp": 17381
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 13,
+      "endLineNumber": 8,
+      "endColumn": 13
+    },
+    "timestamp": 17381
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 13,
+          "endLineNumber": 8,
+          "endColumn": 13
+        },
+        "text": "a"
+      }
+    ],
+    "versionId": 67,
+    "duringSuggest": false,
+    "timestamp": 17479
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 14,
+      "endLineNumber": 8,
+      "endColumn": 14
+    },
+    "timestamp": 17480
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 14,
+          "endLineNumber": 8,
+          "endColumn": 14
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 68,
+    "duringSuggest": false,
+    "timestamp": 17591
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 15,
+      "endLineNumber": 8,
+      "endColumn": 15
+    },
+    "timestamp": 17591
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 14,
+          "endLineNumber": 8,
+          "endColumn": 15
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 69,
+    "duringSuggest": false,
+    "timestamp": 17893
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 14,
+      "endLineNumber": 8,
+      "endColumn": 14
+    },
+    "timestamp": 17893
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 13,
+          "endLineNumber": 8,
+          "endColumn": 14
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 70,
+    "duringSuggest": false,
+    "timestamp": 18044
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 13,
+      "endLineNumber": 8,
+      "endColumn": 13
+    },
+    "timestamp": 18044
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 12,
+          "endLineNumber": 8,
+          "endColumn": 13
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 71,
+    "duringSuggest": false,
+    "timestamp": 18189
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 12,
+      "endLineNumber": 8,
+      "endColumn": 12
+    },
+    "timestamp": 18189
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 12,
+          "endLineNumber": 8,
+          "endColumn": 12
+        },
+        "text": "F"
+      }
+    ],
+    "versionId": 72,
+    "duringSuggest": false,
+    "timestamp": 18288
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 13,
+      "endLineNumber": 8,
+      "endColumn": 13
+    },
+    "timestamp": 18288
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 13,
+          "endLineNumber": 8,
+          "endColumn": 13
+        },
+        "text": "a"
+      }
+    ],
+    "versionId": 73,
+    "duringSuggest": false,
+    "timestamp": 18464
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 14,
+      "endLineNumber": 8,
+      "endColumn": 14
+    },
+    "timestamp": 18464
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 14,
+          "endLineNumber": 8,
+          "endColumn": 14
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 74,
+    "duringSuggest": false,
+    "timestamp": 18559
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 15,
+      "endLineNumber": 8,
+      "endColumn": 15
+    },
+    "timestamp": 18559
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 15,
+          "endLineNumber": 8,
+          "endColumn": 15
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 75,
+    "duringSuggest": false,
+    "timestamp": 18706
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 16,
+      "endLineNumber": 8,
+      "endColumn": 16
+    },
+    "timestamp": 18706
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 16,
+          "endLineNumber": 8,
+          "endColumn": 16
+        },
+        "text": "e"
+      }
+    ],
+    "versionId": 76,
+    "duringSuggest": false,
+    "timestamp": 18813
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 17,
+      "endLineNumber": 8,
+      "endColumn": 17
+    },
+    "timestamp": 18813
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 17,
+          "endLineNumber": 8,
+          "endColumn": 17
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 77,
+    "duringSuggest": false,
+    "timestamp": 18904
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 18,
+      "endLineNumber": 8,
+      "endColumn": 18
+    },
+    "timestamp": 18904
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 18,
+          "endLineNumber": 8,
+          "endColumn": 18
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 78,
+    "duringSuggest": false,
+    "timestamp": 19063
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 19,
+      "endLineNumber": 8,
+      "endColumn": 19
+    },
+    "timestamp": 19063
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 20,
+      "endLineNumber": 8,
+      "endColumn": 20
+    },
+    "timestamp": 19307
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 20,
+          "endLineNumber": 8,
+          "endColumn": 20
+        },
+        "text": ","
+      }
+    ],
+    "versionId": 79,
+    "duringSuggest": false,
+    "timestamp": 19729
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 21,
+      "endLineNumber": 8,
+      "endColumn": 21
+    },
+    "timestamp": 19729
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 8,
+          "startColumn": 21,
+          "endLineNumber": 8,
+          "endColumn": 21
+        },
+        "text": "\n    "
+      }
+    ],
+    "versionId": 80,
+    "duringSuggest": false,
+    "timestamp": 19962
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 5,
+      "endLineNumber": 9,
+      "endColumn": 5
+    },
+    "timestamp": 19962
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 5,
+          "endLineNumber": 9,
+          "endColumn": 5
+        },
+        "text": "f"
+      }
+    ],
+    "versionId": 81,
+    "duringSuggest": false,
+    "timestamp": 20623
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 6,
+      "endLineNumber": 9,
+      "endColumn": 6
+    },
+    "timestamp": 20623
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 20642
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 6,
+          "endLineNumber": 9,
+          "endColumn": 6
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 82,
+    "duringSuggest": false,
+    "timestamp": 20731
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 7,
+      "endLineNumber": 9,
+      "endColumn": 7
+    },
+    "timestamp": 20731
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 7,
+          "endLineNumber": 9,
+          "endColumn": 7
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 83,
+    "duringSuggest": false,
+    "timestamp": 20861
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 8,
+      "endLineNumber": 9,
+      "endColumn": 8
+    },
+    "timestamp": 20861
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 8,
+          "endLineNumber": 9,
+          "endColumn": 8
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 84,
+    "duringSuggest": false,
+    "timestamp": 20986
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 9,
+      "endLineNumber": 9,
+      "endColumn": 9
+    },
+    "timestamp": 20986
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 9,
+          "endLineNumber": 9,
+          "endColumn": 9
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 85,
+    "duringSuggest": false,
+    "timestamp": 21065
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 10,
+      "endLineNumber": 9,
+      "endColumn": 10
+    },
+    "timestamp": 21065
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 10,
+          "endLineNumber": 9,
+          "endColumn": 10
+        },
+        "text": ":"
+      }
+    ],
+    "versionId": 86,
+    "duringSuggest": false,
+    "timestamp": 21248
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 11,
+      "endLineNumber": 9,
+      "endColumn": 11
+    },
+    "timestamp": 21248
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 21249
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 11,
+          "endLineNumber": 9,
+          "endColumn": 11
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 87,
+    "duringSuggest": false,
+    "timestamp": 21364
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 12,
+      "endLineNumber": 9,
+      "endColumn": 12
+    },
+    "timestamp": 21364
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 12,
+          "endLineNumber": 9,
+          "endColumn": 12
+        },
+        "text": "\"\""
+      }
+    ],
+    "versionId": 88,
+    "duringSuggest": false,
+    "timestamp": 21537
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 13,
+      "endLineNumber": 9,
+      "endColumn": 13
+    },
+    "timestamp": 21537
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 13,
+          "endLineNumber": 9,
+          "endColumn": 13
+        },
+        "text": "W"
+      }
+    ],
+    "versionId": 89,
+    "duringSuggest": false,
+    "timestamp": 21691
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 14,
+      "endLineNumber": 9,
+      "endColumn": 14
+    },
+    "timestamp": 21691
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 14,
+          "endLineNumber": 9,
+          "endColumn": 14
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 90,
+    "duringSuggest": false,
+    "timestamp": 21896
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 15,
+      "endLineNumber": 9,
+      "endColumn": 15
+    },
+    "timestamp": 21896
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 15,
+          "endLineNumber": 9,
+          "endColumn": 15
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 91,
+    "duringSuggest": false,
+    "timestamp": 21974
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 16,
+      "endLineNumber": 9,
+      "endColumn": 16
+    },
+    "timestamp": 21974
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 16,
+          "endLineNumber": 9,
+          "endColumn": 16
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 92,
+    "duringSuggest": false,
+    "timestamp": 22039
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 17,
+      "endLineNumber": 9,
+      "endColumn": 17
+    },
+    "timestamp": 22039
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 17,
+          "endLineNumber": 9,
+          "endColumn": 17
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 93,
+    "duringSuggest": false,
+    "timestamp": 22111
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 18,
+      "endLineNumber": 9,
+      "endColumn": 18
+    },
+    "timestamp": 22111
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 18,
+          "endLineNumber": 9,
+          "endColumn": 18
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 94,
+    "duringSuggest": false,
+    "timestamp": 22149
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 19,
+      "endLineNumber": 9,
+      "endColumn": 19
+    },
+    "timestamp": 22149
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 9,
+          "startColumn": 19,
+          "endLineNumber": 9,
+          "endColumn": 19
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 95,
+    "duringSuggest": false,
+    "timestamp": 22221
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 20,
+      "endLineNumber": 9,
+      "endColumn": 20
+    },
+    "timestamp": 22221
+  },
+  {
+    "type": "keyDown",
+    "key": "ArrowDown",
+    "code": "ArrowDown",
+    "ctrlKey": false,
+    "altKey": false,
+    "metaKey": false,
+    "shiftKey": false,
+    "category": "navigation",
+    "timestamp": 22750
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 10,
+      "startColumn": 2,
+      "endLineNumber": 10,
+      "endColumn": 2
+    },
+    "timestamp": 22751
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 10,
+          "startColumn": 2,
+          "endLineNumber": 10,
+          "endColumn": 2
+        },
+        "text": "\n"
+      }
+    ],
+    "versionId": 96,
+    "duringSuggest": false,
+    "timestamp": 23100
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 11,
+      "startColumn": 1,
+      "endLineNumber": 11,
+      "endColumn": 1
+    },
+    "timestamp": 23100
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 11,
+          "startColumn": 1,
+          "endLineNumber": 11,
+          "endColumn": 1
+        },
+        "text": "\n"
+      }
+    ],
+    "versionId": 97,
+    "duringSuggest": false,
+    "timestamp": 23242
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 1
+    },
+    "timestamp": 23242
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 1,
+          "endLineNumber": 12,
+          "endColumn": 1
+        },
+        "text": "c"
+      }
+    ],
+    "versionId": 98,
+    "duringSuggest": false,
+    "timestamp": 24254
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 2,
+      "endLineNumber": 12,
+      "endColumn": 2
+    },
+    "timestamp": 24254
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 24280
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 2,
+          "endLineNumber": 12,
+          "endColumn": 2
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 99,
+    "duringSuggest": false,
+    "timestamp": 24371
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 3,
+      "endLineNumber": 12,
+      "endColumn": 3
+    },
+    "timestamp": 24371
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 3,
+          "endLineNumber": 12,
+          "endColumn": 3
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 100,
+    "duringSuggest": false,
+    "timestamp": 24439
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 4,
+      "endLineNumber": 12,
+      "endColumn": 4
+    },
+    "timestamp": 24439
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 4,
+          "endLineNumber": 12,
+          "endColumn": 4
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 101,
+    "duringSuggest": false,
+    "timestamp": 24590
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 5,
+      "endLineNumber": 12,
+      "endColumn": 5
+    },
+    "timestamp": 24590
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 1,
+          "endLineNumber": 12,
+          "endColumn": 5
+        },
+        "text": "console"
+      }
+    ],
+    "versionId": 102,
+    "duringSuggest": false,
+    "timestamp": 24880
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 8,
+      "endLineNumber": 12,
+      "endColumn": 8
+    },
+    "timestamp": 24881
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 24881
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 8,
+          "endLineNumber": 12,
+          "endColumn": 8
+        },
+        "text": "."
+      }
+    ],
+    "versionId": 103,
+    "duringSuggest": false,
+    "timestamp": 25405
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 9,
+      "endLineNumber": 12,
+      "endColumn": 9
+    },
+    "timestamp": 25405
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 25416
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 9,
+          "endLineNumber": 12,
+          "endColumn": 9
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 104,
+    "duringSuggest": false,
+    "timestamp": 25674
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 10,
+      "endLineNumber": 12,
+      "endColumn": 10
+    },
+    "timestamp": 25674
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 10,
+          "endLineNumber": 12,
+          "endColumn": 10
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 105,
+    "duringSuggest": false,
+    "timestamp": 25881
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 11,
+      "endLineNumber": 12,
+      "endColumn": 11
+    },
+    "timestamp": 25881
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 9,
+          "endLineNumber": 12,
+          "endColumn": 11
+        },
+        "text": "log"
+      }
+    ],
+    "versionId": 106,
+    "duringSuggest": false,
+    "timestamp": 26195
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 12,
+      "endLineNumber": 12,
+      "endColumn": 12
+    },
+    "timestamp": 26195
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 26195
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 12,
+          "endLineNumber": 12,
+          "endColumn": 12
+        },
+        "text": "()"
+      }
+    ],
+    "versionId": 107,
+    "duringSuggest": false,
+    "timestamp": 26462
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 13,
+      "endLineNumber": 12,
+      "endColumn": 13
+    },
+    "timestamp": 26462
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 13,
+          "endLineNumber": 12,
+          "endColumn": 13
+        },
+        "text": "\"\""
+      }
+    ],
+    "versionId": 108,
+    "duringSuggest": false,
+    "timestamp": 26684
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 14,
+      "endLineNumber": 12,
+      "endColumn": 14
+    },
+    "timestamp": 26685
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 14,
+          "endLineNumber": 12,
+          "endColumn": 14
+        },
+        "text": "H"
+      }
+    ],
+    "versionId": 109,
+    "duringSuggest": false,
+    "timestamp": 27283
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 15,
+      "endLineNumber": 12,
+      "endColumn": 15
+    },
+    "timestamp": 27283
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 14,
+          "endLineNumber": 12,
+          "endColumn": 15
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 110,
+    "duringSuggest": false,
+    "timestamp": 27675
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 14,
+      "endLineNumber": 12,
+      "endColumn": 14
+    },
+    "timestamp": 27675
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 13,
+          "endLineNumber": 12,
+          "endColumn": 15
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 111,
+    "duringSuggest": false,
+    "timestamp": 27811
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 13,
+      "endLineNumber": 12,
+      "endColumn": 13
+    },
+    "timestamp": 27811
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 13,
+          "endLineNumber": 12,
+          "endColumn": 13
+        },
+        "text": "``"
+      }
+    ],
+    "versionId": 112,
+    "duringSuggest": false,
+    "timestamp": 28247
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 14,
+      "endLineNumber": 12,
+      "endColumn": 14
+    },
+    "timestamp": 28247
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 14,
+          "endLineNumber": 12,
+          "endColumn": 14
+        },
+        "text": "H"
+      }
+    ],
+    "versionId": 113,
+    "duringSuggest": false,
+    "timestamp": 28890
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 15,
+      "endLineNumber": 12,
+      "endColumn": 15
+    },
+    "timestamp": 28891
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 15,
+          "endLineNumber": 12,
+          "endColumn": 15
+        },
+        "text": "e"
+      }
+    ],
+    "versionId": 114,
+    "duringSuggest": false,
+    "timestamp": 29047
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 16,
+      "endLineNumber": 12,
+      "endColumn": 16
+    },
+    "timestamp": 29047
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 16,
+          "endLineNumber": 12,
+          "endColumn": 16
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 115,
+    "duringSuggest": false,
+    "timestamp": 29145
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 17,
+      "endLineNumber": 12,
+      "endColumn": 17
+    },
+    "timestamp": 29145
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 17,
+          "endLineNumber": 12,
+          "endColumn": 17
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 116,
+    "duringSuggest": false,
+    "timestamp": 29296
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 18,
+      "endLineNumber": 12,
+      "endColumn": 18
+    },
+    "timestamp": 29297
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 17,
+          "endLineNumber": 12,
+          "endColumn": 18
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 117,
+    "duringSuggest": false,
+    "timestamp": 29631
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 17,
+      "endLineNumber": 12,
+      "endColumn": 17
+    },
+    "timestamp": 29631
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 16,
+          "endLineNumber": 12,
+          "endColumn": 17
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 118,
+    "duringSuggest": false,
+    "timestamp": 29844
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 16,
+      "endLineNumber": 12,
+      "endColumn": 16
+    },
+    "timestamp": 29844
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 16,
+          "endLineNumber": 12,
+          "endColumn": 16
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 119,
+    "duringSuggest": false,
+    "timestamp": 30089
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 17,
+      "endLineNumber": 12,
+      "endColumn": 17
+    },
+    "timestamp": 30089
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 17,
+          "endLineNumber": 12,
+          "endColumn": 17
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 120,
+    "duringSuggest": false,
+    "timestamp": 30231
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 18,
+      "endLineNumber": 12,
+      "endColumn": 18
+    },
+    "timestamp": 30231
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 18,
+          "endLineNumber": 12,
+          "endColumn": 18
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 121,
+    "duringSuggest": false,
+    "timestamp": 30416
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 19,
+      "endLineNumber": 12,
+      "endColumn": 19
+    },
+    "timestamp": 30416
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 19,
+          "endLineNumber": 12,
+          "endColumn": 19
+        },
+        "text": "!"
+      }
+    ],
+    "versionId": 122,
+    "duringSuggest": false,
+    "timestamp": 30799
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 20,
+      "endLineNumber": 12,
+      "endColumn": 20
+    },
+    "timestamp": 30799
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 19,
+      "endLineNumber": 12,
+      "endColumn": 19
+    },
+    "timestamp": 31362
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 19,
+          "endLineNumber": 12,
+          "endColumn": 19
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 123,
+    "duringSuggest": false,
+    "timestamp": 32152
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 20,
+      "endLineNumber": 12,
+      "endColumn": 20
+    },
+    "timestamp": 32152
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 20,
+          "endLineNumber": 12,
+          "endColumn": 20
+        },
+        "text": "$"
+      }
+    ],
+    "versionId": 124,
+    "duringSuggest": false,
+    "timestamp": 32589
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 21,
+      "endLineNumber": 12,
+      "endColumn": 21
+    },
+    "timestamp": 32589
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 21,
+          "endLineNumber": 12,
+          "endColumn": 21
+        },
+        "text": "{"
+      }
+    ],
+    "versionId": 125,
+    "duringSuggest": false,
+    "timestamp": 32702
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 22,
+      "endLineNumber": 12,
+      "endColumn": 22
+    },
+    "timestamp": 32702
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 22,
+          "endLineNumber": 12,
+          "endColumn": 22
+        },
+        "text": "}"
+      }
+    ],
+    "versionId": 126,
+    "duringSuggest": false,
+    "timestamp": 32786
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 23,
+      "endLineNumber": 12,
+      "endColumn": 23
+    },
+    "timestamp": 32786
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 22,
+      "endLineNumber": 12,
+      "endColumn": 22
+    },
+    "timestamp": 33220
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 22,
+          "endLineNumber": 12,
+          "endColumn": 22
+        },
+        "text": "[]"
+      }
+    ],
+    "versionId": 127,
+    "duringSuggest": false,
+    "timestamp": 34644
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 23,
+      "endLineNumber": 12,
+      "endColumn": 23
+    },
+    "timestamp": 34644
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 23,
+          "endLineNumber": 12,
+          "endColumn": 24
+        },
+        "text": "]"
+      }
+    ],
+    "versionId": 128,
+    "duringSuggest": false,
+    "timestamp": 34709
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 24,
+      "endLineNumber": 12,
+      "endColumn": 24
+    },
+    "timestamp": 34710
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 23,
+      "endLineNumber": 12,
+      "endColumn": 23
+    },
+    "timestamp": 35205
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 23,
+          "endLineNumber": 12,
+          "endColumn": 23
+        },
+        "text": "u"
+      }
+    ],
+    "versionId": 129,
+    "duringSuggest": false,
+    "timestamp": 35923
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 24,
+      "endLineNumber": 12,
+      "endColumn": 24
+    },
+    "timestamp": 35923
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 35949
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 24,
+          "endLineNumber": 12,
+          "endColumn": 24
+        },
+        "text": "."
+      }
+    ],
+    "versionId": 130,
+    "duringSuggest": false,
+    "timestamp": 36137
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 25,
+      "endLineNumber": 12,
+      "endColumn": 25
+    },
+    "timestamp": 36137
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 36139
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 36150
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 25,
+          "endLineNumber": 12,
+          "endColumn": 25
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 131,
+    "duringSuggest": false,
+    "timestamp": 36389
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 26,
+      "endLineNumber": 12,
+      "endColumn": 26
+    },
+    "timestamp": 36389
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 25,
+          "endLineNumber": 12,
+          "endColumn": 26
+        },
+        "text": ""
+      }
+    ],
+    "versionId": 132,
+    "duringSuggest": false,
+    "timestamp": 37288
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 25,
+      "endLineNumber": 12,
+      "endColumn": 25
+    },
+    "timestamp": 37288
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 25,
+          "endLineNumber": 12,
+          "endColumn": 25
+        },
+        "text": "f"
+      }
+    ],
+    "versionId": 133,
+    "duringSuggest": false,
+    "timestamp": 37465
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 26,
+      "endLineNumber": 12,
+      "endColumn": 26
+    },
+    "timestamp": 37465
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 26,
+          "endLineNumber": 12,
+          "endColumn": 26
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 134,
+    "duringSuggest": false,
+    "timestamp": 37543
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 27,
+      "endLineNumber": 12,
+      "endColumn": 27
+    },
+    "timestamp": 37543
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 27,
+          "endLineNumber": 12,
+          "endColumn": 27
+        },
+        "text": "r"
+      }
+    ],
+    "versionId": 135,
+    "duringSuggest": false,
+    "timestamp": 37672
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 28,
+      "endLineNumber": 12,
+      "endColumn": 28
+    },
+    "timestamp": 37672
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 28,
+          "endLineNumber": 12,
+          "endColumn": 28
+        },
+        "text": "s"
+      }
+    ],
+    "versionId": 136,
+    "duringSuggest": false,
+    "timestamp": 37763
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 29,
+      "endLineNumber": 12,
+      "endColumn": 29
+    },
+    "timestamp": 37763
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 29,
+          "endLineNumber": 12,
+          "endColumn": 29
+        },
+        "text": "t"
+      }
+    ],
+    "versionId": 137,
+    "duringSuggest": false,
+    "timestamp": 37863
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 30,
+      "endLineNumber": 12,
+      "endColumn": 30
+    },
+    "timestamp": 37863
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 30,
+          "endLineNumber": 12,
+          "endColumn": 30
+        },
+        "text": ","
+      }
+    ],
+    "versionId": 138,
+    "duringSuggest": false,
+    "timestamp": 37950
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 31,
+      "endLineNumber": 12,
+      "endColumn": 31
+    },
+    "timestamp": 37950
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 37952
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 31,
+          "endLineNumber": 12,
+          "endColumn": 31
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 139,
+    "duringSuggest": false,
+    "timestamp": 38051
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 32,
+      "endLineNumber": 12,
+      "endColumn": 32
+    },
+    "timestamp": 38051
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 32,
+          "endLineNumber": 12,
+          "endColumn": 32
+        },
+        "text": "u"
+      }
+    ],
+    "versionId": 140,
+    "duringSuggest": false,
+    "timestamp": 38232
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 33,
+      "endLineNumber": 12,
+      "endColumn": 33
+    },
+    "timestamp": 38232
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 38257
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 33,
+          "endLineNumber": 12,
+          "endColumn": 33
+        },
+        "text": "."
+      }
+    ],
+    "versionId": 141,
+    "duringSuggest": false,
+    "timestamp": 38474
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 34,
+      "endLineNumber": 12,
+      "endColumn": 34
+    },
+    "timestamp": 38474
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 38476
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 38482
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 34,
+          "endLineNumber": 12,
+          "endColumn": 34
+        },
+        "text": "l"
+      }
+    ],
+    "versionId": 142,
+    "duringSuggest": false,
+    "timestamp": 38702
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 35,
+      "endLineNumber": 12,
+      "endColumn": 35
+    },
+    "timestamp": 38703
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 34,
+          "endLineNumber": 12,
+          "endColumn": 35
+        },
+        "text": "last"
+      }
+    ],
+    "versionId": 143,
+    "duringSuggest": false,
+    "timestamp": 39226
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 38,
+      "endLineNumber": 12,
+      "endColumn": 38
+    },
+    "timestamp": 39227
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 39227
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 39,
+      "endLineNumber": 12,
+      "endColumn": 39
+    },
+    "timestamp": 39671
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 39,
+          "endLineNumber": 12,
+          "endColumn": 39
+        },
+        "text": "."
+      }
+    ],
+    "versionId": 144,
+    "duringSuggest": false,
+    "timestamp": 40215
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 40,
+      "endLineNumber": 12,
+      "endColumn": 40
+    },
+    "timestamp": 40215
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 40227
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 40,
+          "endLineNumber": 12,
+          "endColumn": 40
+        },
+        "text": "c"
+      }
+    ],
+    "versionId": 145,
+    "duringSuggest": false,
+    "timestamp": 41440
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 41,
+      "endLineNumber": 12,
+      "endColumn": 41
+    },
+    "timestamp": 41440
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 41,
+          "endLineNumber": 12,
+          "endColumn": 41
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 146,
+    "duringSuggest": false,
+    "timestamp": 41505
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 42,
+      "endLineNumber": 12,
+      "endColumn": 42
+    },
+    "timestamp": 41505
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 42,
+          "endLineNumber": 12,
+          "endColumn": 42
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 147,
+    "duringSuggest": false,
+    "timestamp": 41592
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 43,
+      "endLineNumber": 12,
+      "endColumn": 43
+    },
+    "timestamp": 41592
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 40,
+          "endLineNumber": 12,
+          "endColumn": 43
+        },
+        "text": "concat"
+      }
+    ],
+    "versionId": 148,
+    "duringSuggest": false,
+    "timestamp": 42326
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 46,
+      "endLineNumber": 12,
+      "endColumn": 46
+    },
+    "timestamp": 42326
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 42326
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 40,
+      "endLineNumber": 12,
+      "endColumn": 46
+    },
+    "timestamp": 43591
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 40,
+          "endLineNumber": 12,
+          "endColumn": 46
+        },
+        "text": "j"
+      }
+    ],
+    "versionId": 149,
+    "duringSuggest": false,
+    "timestamp": 43922
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 41,
+      "endLineNumber": 12,
+      "endColumn": 41
+    },
+    "timestamp": 43923
+  },
+  {
+    "type": "suggestShow",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 43940
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 41,
+          "endLineNumber": 12,
+          "endColumn": 41
+        },
+        "text": "o"
+      }
+    ],
+    "versionId": 150,
+    "duringSuggest": false,
+    "timestamp": 44054
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 42,
+      "endLineNumber": 12,
+      "endColumn": 42
+    },
+    "timestamp": 44054
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 42,
+          "endLineNumber": 12,
+          "endColumn": 42
+        },
+        "text": "i"
+      }
+    ],
+    "versionId": 151,
+    "duringSuggest": false,
+    "timestamp": 44173
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 43,
+      "endLineNumber": 12,
+      "endColumn": 43
+    },
+    "timestamp": 44173
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 43,
+          "endLineNumber": 12,
+          "endColumn": 43
+        },
+        "text": "n"
+      }
+    ],
+    "versionId": 152,
+    "duringSuggest": false,
+    "timestamp": 44218
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 44,
+      "endLineNumber": 12,
+      "endColumn": 44
+    },
+    "timestamp": 44218
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 44,
+          "endLineNumber": 12,
+          "endColumn": 44
+        },
+        "text": "()"
+      }
+    ],
+    "versionId": 153,
+    "duringSuggest": false,
+    "timestamp": 44409
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 45,
+      "endLineNumber": 12,
+      "endColumn": 45
+    },
+    "timestamp": 44409
+  },
+  {
+    "type": "suggestHide",
+    "method": "attr-observer",
+    "reason": "style",
+    "timestamp": 44410
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 45,
+          "endLineNumber": 12,
+          "endColumn": 45
+        },
+        "text": "''"
+      }
+    ],
+    "versionId": 154,
+    "duringSuggest": false,
+    "timestamp": 44905
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 46,
+      "endLineNumber": 12,
+      "endColumn": 46
+    },
+    "timestamp": 44905
+  },
+  {
+    "type": "contentChange",
+    "changes": [
+      {
+        "range": {
+          "startLineNumber": 12,
+          "startColumn": 46,
+          "endLineNumber": 12,
+          "endColumn": 46
+        },
+        "text": " "
+      }
+    ],
+    "versionId": 155,
+    "duringSuggest": false,
+    "timestamp": 45004
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 47,
+      "endLineNumber": 12,
+      "endColumn": 47
+    },
+    "timestamp": 45004
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 53,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 46629
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 12,
+      "startColumn": 50,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47841
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 11,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47851
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 10,
+      "startColumn": 2,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47891
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 21,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47918
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 9,
+      "startColumn": 19,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47927
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 15,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47942
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 8,
+      "startColumn": 12,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47945
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 10,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47953
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 7,
+      "startColumn": 8,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47962
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 6,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47969
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 5,
+      "startColumn": 2,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47978
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 2,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47986
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 4,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 47995
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 3,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 48003
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 2,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 48011
+  },
+  {
+    "type": "cursorSelection",
+    "selection": {
+      "startLineNumber": 1,
+      "startColumn": 1,
+      "endLineNumber": 12,
+      "endColumn": 53
+    },
+    "timestamp": 48020
+  }
+]
